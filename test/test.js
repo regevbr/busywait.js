@@ -105,6 +105,34 @@ describe('busywait.js', function () {
             })
     });
 
+    it('sync should fail on empty syncCheckFn', function (done) {
+        busywait.sync(undefined, {
+            sleepTime: 500,
+            maxChecks: 500,
+        })
+            .then(function () {
+                done('busywait should fail')
+            })
+            .catch(function (err) {
+                expect(err).to.be('syncCheckFn must be a function');
+                done();
+            })
+    });
+
+    it('sync should fail on non function syncCheckFn', function (done) {
+        busywait.sync('str', {
+            sleepTime: 500,
+            maxChecks: 500,
+        })
+            .then(function () {
+                done('busywait should fail')
+            })
+            .catch(function (err) {
+                expect(err).to.be('syncCheckFn must be a function');
+                done();
+            })
+    });
+
     it('async should complete', function () {
         return busywait.async(asyncCheck, {
             sleepTime: 500,
@@ -178,6 +206,34 @@ describe('busywait.js', function () {
             })
             .catch(function (err) {
                 expect(err).to.be('sleepTime must be a valid integer greater than 0');
+                done();
+            })
+    });
+
+    it('async should fail on empty asyncCheckFn', function (done) {
+        busywait.async(undefined, {
+            sleepTime: 500,
+            maxChecks: 500,
+        })
+            .then(function () {
+                done('busywait should fail')
+            })
+            .catch(function (err) {
+                expect(err).to.be('asyncCheckFn must be a function');
+                done();
+            })
+    });
+
+    it('async should fail on non function asyncCheckFn', function (done) {
+        busywait.async('str', {
+            sleepTime: 500,
+            maxChecks: 500,
+        })
+            .then(function () {
+                done('busywait should fail')
+            })
+            .catch(function (err) {
+                expect(err).to.be('asyncCheckFn must be a function');
                 done();
             })
     });
