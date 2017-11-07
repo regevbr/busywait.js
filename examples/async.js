@@ -1,4 +1,5 @@
 const busywait = require('../index').async;
+const Promise = require('bluebird');
 
 const waitUntil = Date.now() + 2500;
 

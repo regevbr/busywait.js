@@ -33,6 +33,7 @@ busywait(syncCheck, {
 or:
 ```js
 const busywait = require('busywait').async;
+const Promise = require('bluebird');
 
 const waitUntil = Date.now() + 2500;
 
@@ -65,9 +66,6 @@ running iteration 5
 running iteration 6
 finished after 6 iterations
 ```
-
-
-
 
 ## sync(syncCheckFn, options) : Promise
 
