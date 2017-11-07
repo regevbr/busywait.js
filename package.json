@@ -1,5 +1,5 @@
 {
-  "name": "busywait.js",
+  "name": "busywait",
   "version": "1.0.0",
   "description": "Async busy wait",
   "main": "./index.js",
