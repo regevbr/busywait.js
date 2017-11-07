@@ -85,7 +85,7 @@ The available options are:
 
 Return value is a promise.
 The promise will be resolved with the number of iterations passed if the `syncCheckFn` returned true within a legal number of checks.
-The promise will rejected if `maxChecks` times the `syncCheckFn` failed.
+The promise will be rejected if the `syncCheckFn` rejected `maxChecks` times.
 
 ## async(asyncCheckFn, options) : Promise
 
@@ -99,4 +99,4 @@ The available options are:
 
 Return value is a promise.
 The promise will be resolved with the number of iterations passed if the `asyncCheckFn` was resolved within a legal number of checks.
-The promise will rejected if `maxChecks` times the `asyncCheckFn` rejected.
+The promise will be rejected if the `asyncCheckFn` rejected `maxChecks` times.
