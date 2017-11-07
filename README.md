@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.org/regevbr/busywait.js.svg?branch=master)](https://travis-ci.org/regevbr/busywait.js)
 [![Coverage Status](https://coveralls.io/repos/github/regevbr/busywait.js/badge.svg)](https://coveralls.io/github/regevbr/busywait.js)
+[![Dependency Status](https://img.shields.io/david/regevbr/busywait.js?style=flat-square&maxAge=2592000)](https://david-dm.org/regevbr/busywait.js)
+
 
 # busywait.js
 Simple Async busy wait module for Node.JS
