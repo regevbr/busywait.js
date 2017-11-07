@@ -1,4 +1,5 @@
 examples/
 test/
-.circleci
+Makefile
+.travis.yml
 .jshintrc
