@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/regevbr/busywait.js.svg?style=svg)](https://circleci.com/gh/regevbr/busywait.js)
+
 # busywait.js
 Simple Async busy wait module for Node.JS
 
