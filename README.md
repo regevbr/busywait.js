@@ -73,7 +73,7 @@ running iteration 6
 finished after 6 iterations
 ```
 
-## sync(syncCheckFn, options) : Promise
+## sync(syncCheckFn, options): Promise
 
 The `syncCheckFn` first argument is the function to run on each iteration.
 `syncCheckFn` must be a function with a boolean return value.
@@ -87,7 +87,7 @@ Return value is a promise.
 The promise will be resolved with the number of iterations passed if the `syncCheckFn` returned true within a legal number of checks.
 The promise will be rejected if the `syncCheckFn` rejected `maxChecks` times.
 
-## async(asyncCheckFn, options) : Promise
+## async(asyncCheckFn, options): Promise
 
 The `asyncCheckFn` first argument is the function to run on each iteration.
 `syncCheckFn` must be a function with a promise return value.
