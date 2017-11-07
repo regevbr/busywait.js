@@ -44,11 +44,11 @@ describe('busywait.js', function () {
             maxChecks: 2
         })
             .then(function () {
-                done('busywait should fail')
+                done('busywait should fail');
             })
             .catch(function () {
                 done();
-            })
+            });
     });
 
     it('sync should fail on no maxChecks', function (done) {
@@ -56,12 +56,12 @@ describe('busywait.js', function () {
             sleepTime: 500,
         })
             .then(function () {
-                done('busywait should fail')
+                done('busywait should fail');
             })
             .catch(function (err) {
                 expect(err).to.be('maxChecks must be a valid integer greater than 0');
                 done();
-            })
+            });
     });
 
     it('sync should fail on invalid maxChecks', function (done) {
@@ -70,12 +70,12 @@ describe('busywait.js', function () {
             sleepTime: 500
         })
             .then(function () {
-                done('busywait should fail')
+                done('busywait should fail');
             })
             .catch(function (err) {
                 expect(err).to.be('maxChecks must be a valid integer greater than 0');
                 done();
-            })
+            });
     });
 
     it('sync should fail on no sleepTime', function (done) {
@@ -83,12 +83,12 @@ describe('busywait.js', function () {
             maxChecks: 500,
         })
             .then(function () {
-                done('busywait should fail')
+                done('busywait should fail');
             })
             .catch(function (err) {
                 expect(err).to.be('sleepTime must be a valid integer greater than 0');
                 done();
-            })
+            });
     });
 
     it('sync should fail on invalid sleepTime', function (done) {
@@ -97,12 +97,12 @@ describe('busywait.js', function () {
             maxChecks: 500,
         })
             .then(function () {
-                done('busywait should fail')
+                done('busywait should fail');
             })
             .catch(function (err) {
                 expect(err).to.be('sleepTime must be a valid integer greater than 0');
                 done();
-            })
+            });
     });
 
     it('sync should fail on empty syncCheckFn', function (done) {
@@ -111,12 +111,12 @@ describe('busywait.js', function () {
             maxChecks: 500,
         })
             .then(function () {
-                done('busywait should fail')
+                done('busywait should fail');
             })
             .catch(function (err) {
                 expect(err).to.be('syncCheckFn must be a function');
                 done();
-            })
+            });
     });
 
     it('sync should fail on non function syncCheckFn', function (done) {
@@ -125,12 +125,12 @@ describe('busywait.js', function () {
             maxChecks: 500,
         })
             .then(function () {
-                done('busywait should fail')
+                done('busywait should fail');
             })
             .catch(function (err) {
                 expect(err).to.be('syncCheckFn must be a function');
                 done();
-            })
+            });
     });
 
     it('async should complete', function () {
@@ -149,11 +149,11 @@ describe('busywait.js', function () {
             maxChecks: 2
         })
             .then(function () {
-                done('busywait should fail')
+                done('busywait should fail');
             })
             .catch(function () {
                 done();
-            })
+            });
     });
 
     it('async should fail on no maxChecks', function (done) {
@@ -161,12 +161,12 @@ describe('busywait.js', function () {
             sleepTime: 500,
         })
             .then(function () {
-                done('busywait should fail')
+                done('busywait should fail');
             })
             .catch(function (err) {
                 expect(err).to.be('maxChecks must be a valid integer greater than 0');
                 done();
-            })
+            });
     });
 
     it('async should fail on invalid maxChecks', function (done) {
@@ -175,12 +175,12 @@ describe('busywait.js', function () {
             sleepTime: 500
         })
             .then(function () {
-                done('busywait should fail')
+                done('busywait should fail');
             })
             .catch(function (err) {
                 expect(err).to.be('maxChecks must be a valid integer greater than 0');
                 done();
-            })
+            });
     });
 
     it('saync should fail on no sleepTime', function (done) {
@@ -188,12 +188,12 @@ describe('busywait.js', function () {
             maxChecks: 500,
         })
             .then(function () {
-                done('busywait should fail')
+                done('busywait should fail');
             })
             .catch(function (err) {
                 expect(err).to.be('sleepTime must be a valid integer greater than 0');
                 done();
-            })
+            });
     });
 
     it('async should fail on invalid sleepTime', function (done) {
@@ -202,12 +202,12 @@ describe('busywait.js', function () {
             maxChecks: 500,
         })
             .then(function () {
-                done('busywait should fail')
+                done('busywait should fail');
             })
             .catch(function (err) {
                 expect(err).to.be('sleepTime must be a valid integer greater than 0');
                 done();
-            })
+            });
     });
 
     it('async should fail on empty asyncCheckFn', function (done) {
@@ -216,12 +216,12 @@ describe('busywait.js', function () {
             maxChecks: 500,
         })
             .then(function () {
-                done('busywait should fail')
+                done('busywait should fail');
             })
             .catch(function (err) {
                 expect(err).to.be('asyncCheckFn must be a function');
                 done();
-            })
+            });
     });
 
     it('async should fail on non function asyncCheckFn', function (done) {
@@ -230,12 +230,12 @@ describe('busywait.js', function () {
             maxChecks: 500,
         })
             .then(function () {
-                done('busywait should fail')
+                done('busywait should fail');
             })
             .catch(function (err) {
                 expect(err).to.be('asyncCheckFn must be a function');
                 done();
-            })
+            });
     });
 
 });
