@@ -1,0 +1,30 @@
+{
+  "name": "busywait.js",
+  "version": "1.0.0",
+  "description": "Async busy wait",
+  "main": "./index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/regevbr/busywait.js.git"
+  },
+  "keywords": [
+    "node",
+    "javascript",
+    "busy",
+    "wait",
+    "busywait",
+    "busy-wait"
+  ],
+  "author": "Regev Brody <regevbr@gmail.com>",
+  "bugs": {
+    "url": "https://github.com/regevbr/busywait.js/issues"
+  },
+  "homepage": "https://github.com/regevbr/busywait.js#readme",
+  "dependencies": {
+    "bluebird": "^3.5.1",
+    "underscore": "^1.8.3"
+  }
+}
