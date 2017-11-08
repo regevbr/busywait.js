@@ -18,6 +18,9 @@
     "busywait",
     "busy-wait"
   ],
+  "engines" : {
+    "node" : ">=6.11.3" 
+  },
   "license": "GPL-2.0",
   "author": "Regev Brody <regevbr@gmail.com>",
   "bugs": {
