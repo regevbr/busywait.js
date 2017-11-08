@@ -91,8 +91,13 @@ describe('busywait.js', function () {
     });
 
     itParam('should fail on no maxChecks', params, function (done, param) {
+        return verifyMaxChecksError(done, param, undefined);
+    });
+
+    function verifyMaxChecksError(done, param, value) {
         return param.method(param.checkFn, {
-            sleepTime: 500,
+            maxChecks: value,
+            sleepTime: 500
         })
             .then(function () {
                 done('busywait should fail');
@@ -101,77 +106,44 @@ describe('busywait.js', function () {
                 expect(err).to.be('maxChecks must be a valid integer greater than 0');
                 done();
             });
-    });
-
-    function verifyMaxChecksError(err) {
-        expect(err).to.be('maxChecks must be a valid integer greater than 0');
     }
 
     itParam('should fail on invalid maxChecks', params, function (done, param) {
-        return param.method(param.checkFn, {
-            maxChecks: -5,
-            sleepTime: 500
-        })
-            .then(function () {
-                done('busywait should fail');
-            })
-            .catch(function (err) {
-                verifyMaxChecksError(err);
-                done();
-            });
+        return verifyMaxChecksError(done, param, -5);
     });
 
     itParam('should fail on no sleepTime', params, function (done, param) {
+        return verifySleepTimeError(done, param, undefined);
+    });
+
+    function verifySleepTimeError(done, param, value) {
         return param.method(param.checkFn, {
+            sleepTime: value,
             maxChecks: 500,
         })
             .then(function () {
                 done('busywait should fail');
             })
             .catch(function (err) {
-                verifySleepTimeError(err);
+                expect(err).to.be('sleepTime must be a valid integer greater than 0');
                 done();
             });
-    });
-
-    function verifySleepTimeError(err) {
-        expect(err).to.be('sleepTime must be a valid integer greater than 0');
     }
 
     itParam('should fail on invalid sleepTime', params, function (done, param) {
-        return param.method(param.checkFn, {
-            sleepTime: -5,
-            maxChecks: 500,
-        })
-            .then(function () {
-                done('busywait should fail');
-            })
-            .catch(function (err) {
-                verifySleepTimeError(err);
-                done();
-            });
+        return verifySleepTimeError(done, param, -5);
     });
 
     itParam('should fail on empty checkFn', params, function (done, param) {
-        return param.method(undefined, {
-            sleepTime: 500,
-            maxChecks: 500,
-        })
-            .then(function () {
-                done('busywait should fail');
-            })
-            .catch(function (err) {
-                verifyCheckFuncError(err);
-                done();
-            });
+        return verifyCheckFuncError(done, param, undefined);
     });
-
-    function verifyCheckFuncError(err) {
-        expect(err).to.be('checkFn must be a function');
-    }
 
     itParam('should fail on non function checkFn', params, function (done, param) {
-        return param.method('str', {
+        return verifyCheckFuncError(done, param, 'str');
+    });
+
+    function verifyCheckFuncError(done, param, value) {
+        return param.method(value, {
             sleepTime: 500,
             maxChecks: 500,
         })
@@ -179,9 +151,10 @@ describe('busywait.js', function () {
                 done('busywait should fail');
             })
             .catch(function (err) {
-                verifyCheckFuncError(err);
+                expect(err).to.be('checkFn must be a function');
                 done();
             });
-    });
+
+    }
 
 });
