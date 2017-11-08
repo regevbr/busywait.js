@@ -3,7 +3,6 @@
 const busywait = require('../lib/index');
 const itParam = require('mocha-param').itParam;
 const expect = require('expect.js');
-const Promise = require('bluebird');
 
 describe('busywait.js', function () {
 
