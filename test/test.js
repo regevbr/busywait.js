@@ -21,7 +21,7 @@ describe('busywait.js', function () {
     function asyncCheck() {
         return new Promise(function (resolve, reject) {
             if (Date.now() > waitUntil) {
-                return resolve();
+                return resolve(true);
             } else {
                 return reject();
             }
@@ -38,8 +38,9 @@ describe('busywait.js', function () {
             sleepTime: 500,
             maxChecks: 20
         })
-            .then(function (iterations) {
-                expect(iterations).to.be(6);
+            .then(function (result) {
+                expect(result.iterations).to.be(6);
+                expect(result.result).to.be(true);
             });
     });
 
@@ -49,8 +50,9 @@ describe('busywait.js', function () {
             maxChecks: 20,
             waitFirst: true
         })
-            .then(function (iterations) {
-                expect(iterations).to.be(5);
+            .then(function (result) {
+                expect(result.iterations).to.be(5);
+                expect(result.result).to.be(true);
             });
     });
 

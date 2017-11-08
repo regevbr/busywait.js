@@ -8,7 +8,7 @@ function asyncCheck(iteration) {
     return new Promise(function (resolve, reject) {
         console.log('running iteration', iteration);
         if (Date.now() > waitUntil) {
-            return resolve();
+            return resolve(true);
         } else {
             return reject();
         }
@@ -19,6 +19,7 @@ busywait(asyncCheck, {
     sleepTime: 500,
     maxChecks: 20
 })
-    .then(function (iterations) {
-        console.log('finished after', iterations, 'iterations');
+    .then(function (result) {
+        console.log('finished after', result.iterations, 'iterations', 'with' +
+            ' result', result.result);
     });

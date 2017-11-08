@@ -27,7 +27,7 @@ npm install --save busywait
 
 Running:
 ```js
-const busywait = require('busywait').sync;
+const busywait = require('../lib/index').sync;
 
 const waitUntil = Date.now() + 2500;
 
@@ -40,13 +40,14 @@ busywait(syncCheck, {
     sleepTime: 500,
     maxChecks: 20
 })
-    .then(function (iterations) {
-        console.log('finished after', iterations, 'iterations');
+    .then(function (result) {
+        console.log('finished after', result.iterations, 'iterations', 'with' +
+            ' result', result.result);
     });
 ```
 or:
 ```js
-const busywait = require('busywait').async;
+const busywait = require('../lib/index').async;
 
 const waitUntil = Date.now() + 2500;
 
@@ -54,7 +55,7 @@ function asyncCheck(iteration) {
     return new Promise(function (resolve, reject) {
         console.log('running iteration', iteration);
         if (Date.now() > waitUntil) {
-            return resolve();
+            return resolve(true);
         } else {
             return reject();
         }
@@ -65,8 +66,9 @@ busywait(asyncCheck, {
     sleepTime: 500,
     maxChecks: 20
 })
-    .then(function (iterations) {
-        console.log('finished after', iterations, 'iterations');
+    .then(function (result) {
+        console.log('finished after', result.iterations, 'iterations', 'with' +
+            ' result', result.result);
     });
 ```
 Will result in:
@@ -77,7 +79,7 @@ running iteration 3
 running iteration 4
 running iteration 5
 running iteration 6
-finished after 6 iterations
+finished after 6 iterations with result true
 ```
 
 ## Methods
@@ -103,8 +105,14 @@ The current iteration number will be passed as first argument to every call of `
 #### Return value
 
 Return value is a promise.
-The promise will be resolved with the number of iterations passed if the `syncCheckFn` returned true within a legal number of checks.
-The promise will be rejected if the `syncCheckFn` rejected `maxChecks` times.
+- The promise will be resolved if the `syncCheckFn` returned true within a
+legal number of checks.
+- The promise will be rejected if the `syncCheckFn` rejected `maxChecks`
+times.
+
+Promise resolved value:
+- `iterations` - The number of iterations it took to finish
+- `result` - Constant `true`
 
 ### async(asyncCheckFn, options): Promise
 
@@ -127,5 +135,10 @@ The current iteration number will be passed as first argument to every call of `
 #### Return value
 
 Return value is a promise.
-The promise will be resolved with the number of iterations passed if the `asyncCheckFn` was resolved within a legal number of checks.
-The promise will be rejected if the `asyncCheckFn` rejected `maxChecks` times.
+- The promise will be resolved if the `asyncCheckFn` was resolved within a
+legal number of checks.
+- The promise will be rejected if the `asyncCheckFn` rejected `maxChecks` times.
+
+Promise resolved value:
+- `iterations` - The number of iterations it took to finish
+- `result` - The resolved value of `asyncCheckFn`

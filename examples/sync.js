@@ -13,6 +13,7 @@ busywait(syncCheck, {
     sleepTime: 500,
     maxChecks: 20
 })
-    .then(function (iterations) {
-        console.log('finished after', iterations, 'iterations');
+    .then(function (result) {
+        console.log('finished after', result.iterations, 'iterations', 'with' +
+            ' result', result.result);
     });

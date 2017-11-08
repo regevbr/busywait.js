@@ -1,6 +1,6 @@
 {
   "name": "busywait",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Async busy wait",
   "main": "./lib/index.js",
   "scripts": {
@@ -25,7 +25,6 @@
   },
   "homepage": "https://github.com/regevbr/busywait.js#readme",
   "dependencies": {
-    "underscore": "^1.8.3"
   },
   "devDependencies": {
     "coveralls": "^3.0.0",
