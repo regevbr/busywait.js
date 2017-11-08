@@ -1,6 +1,6 @@
 {
   "name": "busywait",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Async busy wait",
   "main": "./lib/index.js",
   "scripts": {
