@@ -44,6 +44,17 @@ describe('busywait.js', function () {
             });
     });
 
+    itParam('should complete with less tries', params, function (param) {
+        return param.method(param.checkFn, {
+            sleepTime: 500,
+            maxChecks: 20,
+            waitFirst: true
+        })
+            .then(function (iterations) {
+                expect(iterations).to.be(5);
+            });
+    });
+
     itParam('should fail on max checks', params, function (done, param) {
         return param.method(param.checkFn, {
             sleepTime: 500,
