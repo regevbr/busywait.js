@@ -18,6 +18,7 @@
     "busywait",
     "busy-wait"
   ],
+  "license": "GPL-2.0",
   "author": "Regev Brody <regevbr@gmail.com>",
   "bugs": {
     "url": "https://github.com/regevbr/busywait.js/issues"
