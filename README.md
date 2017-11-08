@@ -81,9 +81,19 @@ The `syncCheckFn` first argument is the function to run on each iteration.
 `syncCheckFn` must be a function with a boolean return value.
 The current iteration number will be passed as first argument to every call of `syncCheckFn`. 
 
-The mandatory options are:
+#### Options
+
+##### mandatory
+
 - `sleepTime` - Time in ms to wait between checks  
 - `maxChecks` - The max number of checks to perform before failing 
+
+##### optional
+
+- `waitFirst` - Should we wait the `sleepTime` before performing the first check (default: false)  
+- `failMsg` - Custom error message to reject the promise with
+
+#### Return value
 
 Return value is a promise.
 The promise will be resolved with the number of iterations passed if the `syncCheckFn` returned true within a legal number of checks.
@@ -95,9 +105,19 @@ The `asyncCheckFn` first argument is the function to run on each iteration.
 `syncCheckFn` must be a function with a promise return value.
 The current iteration number will be passed as first argument to every call of `asyncCheckFn`. 
 
-The mandatory options are:
+#### Options
+
+##### mandatory
+
 - `sleepTime` - Time in ms to wait between checks  
 - `maxChecks` - The max number of checks to perform before failing 
+
+##### optional
+
+- `waitFirst` - Should we wait the `sleepTime` before performing the first check (default: false)  
+- `failMsg` - Custom error message to reject the promise with
+
+#### Return value
 
 Return value is a promise.
 The promise will be resolved with the number of iterations passed if the `asyncCheckFn` was resolved within a legal number of checks.
