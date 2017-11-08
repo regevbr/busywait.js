@@ -18,7 +18,7 @@ describe('busywait.js', function () {
         return Date.now() > waitUntil;
     }
 
-    function asyncCheck(iteration) {
+    function asyncCheck() {
         return new Promise(function (resolve, reject) {
             if (Date.now() > waitUntil) {
                 return resolve(true);
