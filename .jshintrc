@@ -50,5 +50,8 @@
   "validthis": false,
   "mocha": true,
   "node": true,
-  "nonstandard": false
+  "nonstandard": false,
+  "predef":[
+    "toString"
+  ]
 }
