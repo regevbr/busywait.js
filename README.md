@@ -1,12 +1,11 @@
 [![Build Status](https://travis-ci.org/regevbr/busywait.js.svg?branch=master)](https://travis-ci.org/regevbr/busywait.js)
 [![Coverage Status](https://coveralls.io/repos/github/regevbr/busywait.js/badge.svg)](https://coveralls.io/github/regevbr/busywait.js)
+[![bitHound Code](https://www.bithound.io/github/regevbr/busywait.js/badges/code.svg)](https://www.bithound.io/github/regevbr/busywait.js)
+[![Known Vulnerabilities](https://snyk.io/test/github/regevbr/busywait.js/badge.svg)](https://snyk.io/test/github/regevbr/busywait.js)
 [![dependencies Status](https://david-dm.org/regevbr/busywait.js/status.svg)](https://david-dm.org/regevbr/busywait.js)
 [![devDependencies Status](https://david-dm.org/regevbr/busywait.js/dev-status.svg)](https://david-dm.org/regevbr/busywait.js?type=dev)
-[![Known Vulnerabilities](https://snyk.io/test/github/regevbr/busywait.js/badge.svg)](https://snyk.io/test/github/regevbr/busywait.js)
-[![npm version](https://badge.fury.io/js/busywait.svg)](https://badge.fury.io/js/busywait)
 [![npm](https://img.shields.io/npm/dt/busywait.svg)](https://github.com/regevbr/busywait.js)
 [![HitCount](http://hits.dwyl.io/regevbr/busywait.js.svg)](http://hits.dwyl.io/regevbr/busywait.js)
-[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/regevbr/busywait.js/issues)
 
 
 [![https://nodei.co/npm/busywait.png?downloads=true&downloadRank=true&stars=true](https://nodei.co/npm/busywait.png?downloads=true&downloadRank=true&stars=true)](https://www.npmjs.com/package/busywait)
