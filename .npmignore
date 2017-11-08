@@ -3,3 +3,4 @@ test/
 Makefile
 .travis.yml
 .jshintrc
+.bithoundrc
