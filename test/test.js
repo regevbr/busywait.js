@@ -1,6 +1,7 @@
 "use strict";
 
-const busywait = require('../index');
+const busywait = require('../lib/index');
+const itParam = require('mocha-param').itParam;
 const expect = require('expect.js');
 const Promise = require('bluebird');
 
@@ -28,8 +29,13 @@ describe('busywait.js', function () {
         });
     }
 
-    it('sync should complete', function () {
-        return busywait.sync(syncCheck, {
+    const params = [
+        {checkFn: syncCheck, method: busywait.sync},
+        {checkFn: asyncCheck, method: busywait.async}
+    ];
+
+    itParam('should complete', params, function (param) {
+        return param.method(param.checkFn, {
             sleepTime: 500,
             maxChecks: 20
         })
@@ -38,21 +44,43 @@ describe('busywait.js', function () {
             });
     });
 
-    it('sync should fail on max checks', function (done) {
-        busywait.sync(syncCheck, {
+    itParam('should fail on max checks', params, function (done, param) {
+        return param.method(param.checkFn, {
             sleepTime: 500,
             maxChecks: 2
         })
             .then(function () {
                 done('busywait should fail');
             })
-            .catch(function () {
+            .catch(function (err) {
+                expect(err).to.be("Exceeded number of iterations to wait");
                 done();
+            })
+            .catch(function (err) {
+                done(err);
             });
     });
 
-    it('sync should fail on no maxChecks', function (done) {
-        busywait.sync(syncCheck, {
+    itParam('should fail on max checks with custom error', params, function (done, param) {
+        return param.method(param.checkFn, {
+            sleepTime: 500,
+            maxChecks: 2,
+            failMsg: "custom fail"
+        })
+            .then(function () {
+                done('busywait should fail');
+            })
+            .catch(function (err) {
+                expect(err).to.be("custom fail");
+                done();
+            })
+            .catch(function (err) {
+                done(err);
+            });
+    });
+
+    itParam('should fail on no maxChecks', params, function (done, param) {
+        return param.method(param.checkFn, {
             sleepTime: 500,
         })
             .then(function () {
@@ -64,8 +92,8 @@ describe('busywait.js', function () {
             });
     });
 
-    it('sync should fail on invalid maxChecks', function (done) {
-        busywait.sync(syncCheck, {
+    itParam('should fail on invalid maxChecks', params, function (done, param) {
+        return param.method(param.checkFn, {
             maxChecks: -5,
             sleepTime: 500
         })
@@ -78,8 +106,8 @@ describe('busywait.js', function () {
             });
     });
 
-    it('sync should fail on no sleepTime', function (done) {
-        busywait.sync(syncCheck, {
+    itParam('should fail on no sleepTime', params, function (done, param) {
+        return param.method(param.checkFn, {
             maxChecks: 500,
         })
             .then(function () {
@@ -91,8 +119,8 @@ describe('busywait.js', function () {
             });
     });
 
-    it('sync should fail on invalid sleepTime', function (done) {
-        busywait.sync(syncCheck, {
+    itParam('should fail on invalid sleepTime', params, function (done, param) {
+        return param.method(param.checkFn, {
             sleepTime: -5,
             maxChecks: 500,
         })
@@ -105,8 +133,8 @@ describe('busywait.js', function () {
             });
     });
 
-    it('sync should fail on empty syncCheckFn', function (done) {
-        busywait.sync(undefined, {
+    itParam('should fail on empty checkFn', params, function (done, param) {
+        return param.method(undefined, {
             sleepTime: 500,
             maxChecks: 500,
         })
@@ -114,13 +142,13 @@ describe('busywait.js', function () {
                 done('busywait should fail');
             })
             .catch(function (err) {
-                expect(err).to.be('syncCheckFn must be a function');
+                expect(err).to.be('checkFn must be a function');
                 done();
             });
     });
 
-    it('sync should fail on non function syncCheckFn', function (done) {
-        busywait.sync('str', {
+    itParam('should fail on non function checkFn', params, function (done, param) {
+        return param.method('str', {
             sleepTime: 500,
             maxChecks: 500,
         })
@@ -128,112 +156,7 @@ describe('busywait.js', function () {
                 done('busywait should fail');
             })
             .catch(function (err) {
-                expect(err).to.be('syncCheckFn must be a function');
-                done();
-            });
-    });
-
-    it('async should complete', function () {
-        return busywait.async(asyncCheck, {
-            sleepTime: 500,
-            maxChecks: 20
-        })
-            .then(function (iterations) {
-                expect(iterations).to.be(6);
-            });
-    });
-
-    it('async should fail on max checks', function (done) {
-        busywait.async(asyncCheck, {
-            sleepTime: 500,
-            maxChecks: 2
-        })
-            .then(function () {
-                done('busywait should fail');
-            })
-            .catch(function () {
-                done();
-            });
-    });
-
-    it('async should fail on no maxChecks', function (done) {
-        busywait.async(asyncCheck, {
-            sleepTime: 500,
-        })
-            .then(function () {
-                done('busywait should fail');
-            })
-            .catch(function (err) {
-                expect(err).to.be('maxChecks must be a valid integer greater than 0');
-                done();
-            });
-    });
-
-    it('async should fail on invalid maxChecks', function (done) {
-        busywait.async(asyncCheck, {
-            maxChecks: -5,
-            sleepTime: 500
-        })
-            .then(function () {
-                done('busywait should fail');
-            })
-            .catch(function (err) {
-                expect(err).to.be('maxChecks must be a valid integer greater than 0');
-                done();
-            });
-    });
-
-    it('saync should fail on no sleepTime', function (done) {
-        busywait.async(asyncCheck, {
-            maxChecks: 500,
-        })
-            .then(function () {
-                done('busywait should fail');
-            })
-            .catch(function (err) {
-                expect(err).to.be('sleepTime must be a valid integer greater than 0');
-                done();
-            });
-    });
-
-    it('async should fail on invalid sleepTime', function (done) {
-        busywait.async(asyncCheck, {
-            sleepTime: -5,
-            maxChecks: 500,
-        })
-            .then(function () {
-                done('busywait should fail');
-            })
-            .catch(function (err) {
-                expect(err).to.be('sleepTime must be a valid integer greater than 0');
-                done();
-            });
-    });
-
-    it('async should fail on empty asyncCheckFn', function (done) {
-        busywait.async(undefined, {
-            sleepTime: 500,
-            maxChecks: 500,
-        })
-            .then(function () {
-                done('busywait should fail');
-            })
-            .catch(function (err) {
-                expect(err).to.be('asyncCheckFn must be a function');
-                done();
-            });
-    });
-
-    it('async should fail on non function asyncCheckFn', function (done) {
-        busywait.async('str', {
-            sleepTime: 500,
-            maxChecks: 500,
-        })
-            .then(function () {
-                done('busywait should fail');
-            })
-            .catch(function (err) {
-                expect(err).to.be('asyncCheckFn must be a function');
+                expect(err).to.be('checkFn must be a function');
                 done();
             });
     });
