@@ -1,3 +1,5 @@
+"use strict";
+
 const busywait = require('../lib/index').sync;
 
 const waitUntil = Date.now() + 2500;

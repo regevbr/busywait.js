@@ -103,6 +103,10 @@ describe('busywait.js', function () {
             });
     });
 
+    function verifyMaxChecksError(err) {
+        expect(err).to.be('maxChecks must be a valid integer greater than 0');
+    }
+
     itParam('should fail on invalid maxChecks', params, function (done, param) {
         return param.method(param.checkFn, {
             maxChecks: -5,
@@ -112,7 +116,7 @@ describe('busywait.js', function () {
                 done('busywait should fail');
             })
             .catch(function (err) {
-                expect(err).to.be('maxChecks must be a valid integer greater than 0');
+                verifyMaxChecksError(err);
                 done();
             });
     });
@@ -125,10 +129,14 @@ describe('busywait.js', function () {
                 done('busywait should fail');
             })
             .catch(function (err) {
-                expect(err).to.be('sleepTime must be a valid integer greater than 0');
+                verifySleepTimeError(err);
                 done();
             });
     });
+
+    function verifySleepTimeError(err) {
+        expect(err).to.be('sleepTime must be a valid integer greater than 0');
+    }
 
     itParam('should fail on invalid sleepTime', params, function (done, param) {
         return param.method(param.checkFn, {
@@ -139,7 +147,7 @@ describe('busywait.js', function () {
                 done('busywait should fail');
             })
             .catch(function (err) {
-                expect(err).to.be('sleepTime must be a valid integer greater than 0');
+                verifySleepTimeError(err);
                 done();
             });
     });
@@ -153,10 +161,14 @@ describe('busywait.js', function () {
                 done('busywait should fail');
             })
             .catch(function (err) {
-                expect(err).to.be('checkFn must be a function');
+                verifyCheckFuncError(err);
                 done();
             });
     });
+
+    function verifyCheckFuncError(err) {
+        expect(err).to.be('checkFn must be a function');
+    }
 
     itParam('should fail on non function checkFn', params, function (done, param) {
         return param.method('str', {
@@ -167,7 +179,7 @@ describe('busywait.js', function () {
                 done('busywait should fail');
             })
             .catch(function (err) {
-                expect(err).to.be('checkFn must be a function');
+                verifyCheckFuncError(err);
                 done();
             });
     });

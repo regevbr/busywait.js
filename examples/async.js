@@ -1,3 +1,5 @@
+"use strict";
+
 const busywait = require('../lib/index').async;
 const Promise = require('bluebird');
 
