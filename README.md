@@ -142,3 +142,8 @@ legal number of checks.
 Promise resolved value:
 - `iterations` - The number of iterations it took to finish
 - `result` - The resolved value of `asyncCheckFn`
+
+## Contributing
+
+Please make all pull requests to the `master` branch and ensure tests pass
+locally.
