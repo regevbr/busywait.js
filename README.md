@@ -1,4 +1,4 @@
-[![Npm Version](https://img.shields.io/npm/v/busywait.js.svg?style=popout)](https://www.npmjs.com/package/busywait.js)
+[![Npm Version](https://img.shields.io/npm/v/busywait.svg?style=popout)](https://www.npmjs.com/package/busywait)
 [![Build Status](https://travis-ci.org/regevbr/busywait.js.svg?branch=master)](https://travis-ci.org/regevbr/busywait.js)
 [![Coverage Status](https://coveralls.io/repos/github/regevbr/busywait.js/badge.svg?branch=master)](https://coveralls.io/github/regevbr/busywait.js?branch=master)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/58abd1713b064f4c9af7dc88d7178ebe)](https://www.codacy.com/app/regevbr/busywait.js?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=regevbr/busywait.js&amp;utm_campaign=Badge_Grade)
