@@ -10,9 +10,9 @@
 Simple Async busy wait module for Node.JS
 
 ## Main features
-- Simple api to busy wait for a desired outcome
-- Slim library (65 lines of code, no dependencies)
-- Full typescript support
+-  Simple api to busy wait for a desired outcome
+-  Slim library (65 lines of code, no dependencies)
+-  Full typescript support
 
 ## Quick example
 ```typescript
@@ -40,7 +40,7 @@ busywait(checkFn, {
     });
 ```
 Will result in:
-```
+``` bash
 running iteration 1
 running iteration 2
 running iteration 3
@@ -61,30 +61,30 @@ npm install busywait
 
 A function that takes a single optional argument, which is the current iteration number.
 The function can either:
-- return a non promised value (in which case, a failed check should throw an error)
-- return promised value (in which case, a failed check should return a rejection)
+-  return a non promised value (in which case, a failed check should throw an error)
+-  return promised value (in which case, a failed check should return a rejection)
 
 #### options
 
 ##### mandatory
 
-- `sleepTime` - Time in ms to wait between checks  
-- `maxChecks` - The max number of checks to perform before failing 
+-  `sleepTime` - Time in ms to wait between checks  
+-  `maxChecks` - The max number of checks to perform before failing 
 
 ##### optional
 
-- `waitFirst` - Should we wait the `sleepTime` before performing the first check (default: false)  
-- `failMsg` - Custom error message to reject the promise with
+-  `waitFirst` - Should we wait the `sleepTime` before performing the first check (default: false)  
+-  `failMsg` - Custom error message to reject the promise with
 
 ### Return value
 
 Return value is a promise.
-- The promise will be resolved if the `checkFn` returned a valid value (resolved promise or did not throw an error)  within a legal number of checks.
-- The promise will be rejected if the `checkFn` rejected ( or threw an error) `maxChecks` times.
+-  The promise will be resolved if the `checkFn` returned a valid value (resolved promise or did not throw an error)  within a legal number of checks.
+-  The promise will be rejected if the `checkFn` rejected ( or threw an error) `maxChecks` times.
 
 Promise resolved value:
-- `iterations` - The number of iterations it took to finish
-- `result` - The resolved value of `checkFn`
+-  `iterations` - The number of iterations it took to finish
+-  `result` - The resolved value of `checkFn`
 
 ## Contributing
 
