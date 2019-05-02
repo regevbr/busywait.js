@@ -1,10 +1,16 @@
 {
   "name": "busywait",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "description": "Async busy wait",
-  "main": "./lib/index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "test": "make test"
+    "clean": "rm -rf node_modules build coverage dist",
+    "build": "npm run lint && npm run buildDist",
+    "buildDist": "rm -rf dist/* && ./node_modules/.bin/tsc",
+    "test": "npm run lint && npm run mocha",
+    "mocha": "mocha test/**/*.ts --reporter spec --opts test/mocha.opts",
+    "cover": "istanbul cover node_modules/mocha/bin/_mocha test/**/*.ts -- -R spec --opts test/mocha.opts",
+    "lint": "tslint -c tslint.json 'src/**/*.ts' 'test/**/*.ts'"
   },
   "repository": {
     "type": "git",
@@ -27,24 +33,35 @@
     "busywait",
     "busy-wait"
   ],
-  "engines" : {
-    "node" : ">=6.11.3" 
+  "engines": {
+    "node": ">=6"
   },
-  "license": "GPL-2.0",
+  "files": [
+    "dist"
+  ],
+  "license": "ISC",
   "author": "Regev Brody <regevbr@gmail.com>",
   "bugs": {
     "url": "https://github.com/regevbr/busywait.js/issues"
   },
   "homepage": "https://github.com/regevbr/busywait.js#readme",
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
-    "coveralls": "^3.0.0",
-    "expect.js": "^0.3.1",
+    "@types/chai": "^4.1.7",
+    "@types/chai-as-promised": "^7.1.0",
+    "@types/mocha": "^5.2.6",
+    "@types/node": "^11.11.3",
+    "chai": "^4.2.0",
+    "chai-as-promised": "^7.1.1",
+    "coveralls": "^3.0.3",
+    "dirty-chai": "^2.0.1",
     "istanbul": "^0.4.5",
-    "jshint": "^2.9.5",
-    "mocha": "^4.0.1",
-    "mocha-lcov-reporter": "^1.3.0",
-    "mocha-param": "^1.0.2"
+    "mocha": "^6.1.4",
+    "mocha-param": "^2.0.0",
+    "sinon": "^7.3.2",
+    "sinon-chai": "^3.3.0",
+    "ts-node": "^8.1.0",
+    "tslint": "^5.16.0",
+    "typescript": "^3.5.0-dev.20190502"
   }
 }
