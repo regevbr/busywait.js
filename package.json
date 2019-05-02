@@ -53,15 +53,15 @@
     "@types/node": "^11.11.3",
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
+    "coveralls": "^3.0.3",
     "dirty-chai": "^2.0.1",
     "istanbul": "^0.4.5",
+    "mocha": "^6.1.4",
+    "mocha-param": "^2.0.0",
     "sinon": "^7.3.2",
-    "npm-check-updates": "^3.1.8",
     "sinon-chai": "^3.3.0",
     "ts-node": "^8.1.0",
     "tslint": "^5.16.0",
-    "typescript": "^3.5.0-dev.20190502",
-    "mocha": "^6.1.4",
-    "coveralls": "^3.0.3"
+    "typescript": "^3.5.0-dev.20190502"
   }
 }
