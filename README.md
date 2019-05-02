@@ -1,72 +1,40 @@
+[![Npm Version](https://img.shields.io/npm/v/busywait.js.svg?style=popout)](https://www.npmjs.com/package/busywait.js)
 [![Build Status](https://travis-ci.org/regevbr/busywait.js.svg?branch=master)](https://travis-ci.org/regevbr/busywait.js)
-[![Coverage Status](https://coveralls.io/repos/github/regevbr/busywait.js/badge.svg)](https://coveralls.io/github/regevbr/busywait.js)
-[![bitHound Overall Score](https://www.bithound.io/github/regevbr/busywait.js/badges/score.svg)](https://www.bithound.io/github/regevbr/busywait.js)
-[![Known Vulnerabilities](https://snyk.io/test/github/regevbr/busywait.js/badge.svg)](https://snyk.io/test/github/regevbr/busywait.js)
+[![Coverage Status](https://coveralls.io/repos/github/regevbr/busywait.js/badge.svg?branch=master)](https://coveralls.io/github/regevbr/busywait.js?branch=master)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/58abd1713b064f4c9af7dc88d7178ebe)](https://www.codacy.com/app/regevbr/busywait.js?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=regevbr/busywait.js&amp;utm_campaign=Badge_Grade)
+[![Known Vulnerabilities](https://snyk.io/test/github/regevbr/busywait.js/badge.svg?targetFile=package.json)](https://snyk.io/test/github/regevbr/busywait.js?targetFile=package.json)
 [![dependencies Status](https://david-dm.org/regevbr/busywait.js/status.svg)](https://david-dm.org/regevbr/busywait.js)
 [![devDependencies Status](https://david-dm.org/regevbr/busywait.js/dev-status.svg)](https://david-dm.org/regevbr/busywait.js?type=dev)
-[![npm](https://img.shields.io/npm/dt/busywait.svg)](https://github.com/regevbr/busywait.js)
-[![HitCount](http://hits.dwyl.io/regevbr/busywait.js.svg)](http://hits.dwyl.io/regevbr/busywait.js)
-
-
-[![https://nodei.co/npm/busywait.png?downloads=true&downloadRank=true&stars=true](https://nodei.co/npm/busywait.png?downloads=true&downloadRank=true&stars=true)](https://www.npmjs.com/package/busywait)
-
-
 
 # busywait.js
 Simple Async busy wait module for Node.JS
 
-## Installation
+## Main features
+- Simple api to busy wait for a desired outcome
+- Slim library (65 lines of code, no dependencies)
+- Full typescript support
 
-This module is installed via npm:
-
-```
-npm install --save busywait
-```
-
-## Usage
-
-Running:
-```js
-const busywait = require('../lib/index').sync;
+## Quick example
+```typescript
+import { busywait } from 'busywait';
+import {IBusyWaitResult} from 'busywait';
 
 const waitUntil = Date.now() + 2500;
-
-function syncCheck(iteration) {
-    console.log('running iteration', iteration);
-    return Date.now() > waitUntil;
-}
-
-busywait(syncCheck, {
-    sleepTime: 500,
-    maxChecks: 20
-})
-    .then(function (result) {
-        console.log('finished after', result.iterations, 'iterations', 'with' +
-            ' result', result.result);
-    });
-```
-or:
-```js
-const busywait = require('../lib/index').async;
-
-const waitUntil = Date.now() + 2500;
-
-function asyncCheck(iteration) {
-    return new Promise(function (resolve, reject) {
+const checkFn = (iteration: number): Promise<string> => {
+    return new Promise((resolve, reject) => {
         console.log('running iteration', iteration);
         if (Date.now() > waitUntil) {
-            return resolve(true);
+            return resolve('success');
         } else {
             return reject();
         }
     });
-}
-
-busywait(asyncCheck, {
+};
+busywait(checkFn, {
     sleepTime: 500,
-    maxChecks: 20
+    maxChecks: 20,
 })
-    .then(function (result) {
+    .then((result: IBusyWaitResult<string>) => {
         console.log('finished after', result.iterations, 'iterations', 'with' +
             ' result', result.result);
     });
@@ -79,48 +47,24 @@ running iteration 3
 running iteration 4
 running iteration 5
 running iteration 6
-finished after 6 iterations with result true
+finished after 6 iterations with result success
 ```
 
-## Methods
+## Install
+```bash
+npm install busywait
+```
 
-### sync(syncCheckFn, options): Promise
+### Parameters
 
-The `syncCheckFn` first argument is the function to run on each iteration.
-`syncCheckFn` must be a function with a boolean return value.
-The current iteration number will be passed as first argument to every call of `syncCheckFn`. 
+#### checkFn
 
-#### Options
+A function that takes a single optional argument, which is the current iteration number.
+The function can either:
+- return a non promised value (in which case, a failed check should throw an error)
+- return promised value (in which case, a failed check should return a rejection)
 
-##### mandatory
-
-- `sleepTime` - Time in ms to wait between checks  
-- `maxChecks` - The max number of checks to perform before failing 
-
-##### optional
-
-- `waitFirst` - Should we wait the `sleepTime` before performing the first check (default: false)  
-- `failMsg` - Custom error message to reject the promise with
-
-#### Return value
-
-Return value is a promise.
-- The promise will be resolved if the `syncCheckFn` returned true within a
-legal number of checks.
-- The promise will be rejected if the `syncCheckFn` rejected `maxChecks`
-times.
-
-Promise resolved value:
-- `iterations` - The number of iterations it took to finish
-- `result` - Constant `true`
-
-### async(asyncCheckFn, options): Promise
-
-The `asyncCheckFn` first argument is the function to run on each iteration.
-`syncCheckFn` must be a function with a promise return value.
-The current iteration number will be passed as first argument to every call of `asyncCheckFn`. 
-
-#### Options
+#### options
 
 ##### mandatory
 
@@ -132,18 +76,17 @@ The current iteration number will be passed as first argument to every call of `
 - `waitFirst` - Should we wait the `sleepTime` before performing the first check (default: false)  
 - `failMsg` - Custom error message to reject the promise with
 
-#### Return value
+### Return value
 
 Return value is a promise.
-- The promise will be resolved if the `asyncCheckFn` was resolved within a
-legal number of checks.
-- The promise will be rejected if the `asyncCheckFn` rejected `maxChecks` times.
+- The promise will be resolved if the `checkFn` returned a valid value (resolved promise or did not throw an error)  within a legal number of checks.
+- The promise will be rejected if the `checkFn` rejected ( or threw an error) `maxChecks` times.
 
 Promise resolved value:
 - `iterations` - The number of iterations it took to finish
-- `result` - The resolved value of `asyncCheckFn`
+- `result` - The resolved value of `checkFn`
 
 ## Contributing
 
-Please make all pull requests to the `master` branch and ensure tests pass
-locally.
+All contributions are happily welcomed!  
+Please make all pull requests to the `master` branch from your fork and ensure tests pass locally.
