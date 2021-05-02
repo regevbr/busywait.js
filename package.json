@@ -31,7 +31,10 @@
     "busy",
     "wait",
     "busywait",
-    "busy-wait"
+    "busy-wait",
+    "exponential",
+    "backoff",
+    "backoff-strategy"
   ],
   "engines": {
     "node": ">=6"
