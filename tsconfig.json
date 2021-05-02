@@ -19,7 +19,7 @@
     "noImplicitUseStrict": false,
     "preserveSymlinks": true,
     "rootDir": "src",
-    "sourceMap": false,
+    "sourceMap": true,
     "lib": [
       "es6",
       "dom"

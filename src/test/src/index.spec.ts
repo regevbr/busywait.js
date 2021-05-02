@@ -1,4 +1,4 @@
-import {busywait, CheckFn, IBusyWaitResult} from '../../dist';
+import {busywait, CheckFn, IBusyWaitResult} from '../..';
 // @ts-ignore
 import {itParam} from 'mocha-param';
 
