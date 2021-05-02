@@ -17,27 +17,24 @@ Simple Async busy wait module for Node.JS
 ## Quick example
 ```typescript
 import { busywait } from 'busywait';
-import {IBusyWaitResult} from 'busywait';
 
 const waitUntil = Date.now() + 2500;
-const checkFn = (iteration: number): Promise<string> => {
-    return new Promise((resolve, reject) => {
-        console.log('running iteration', iteration);
-        if (Date.now() > waitUntil) {
-            return resolve('success');
-        } else {
-            return reject();
-        }
-    });
+
+const checkFn = async (iteration: number): Promise<string> => {
+    console.log('running iteration', iteration);
+    if (Date.now() > waitUntil) {
+        return 'success';
+    }
+    throw new Erorr('custom error');
 };
-busywait(checkFn, {
-    sleepTime: 500,
-    maxChecks: 20,
-})
-    .then((result: IBusyWaitResult<string>) => {
-        console.log('finished after', result.iterations, 'iterations', 'with' +
-            ' result', result.result);
-    });
+
+(async () => {
+    const result = await busywait(checkFn, {
+        sleepTime: 500,
+        maxChecks: 20,
+    })
+    console.log(`finished after ${result.iterations} iterations with result ${result.result}`);
+})();
 ```
 Will result in:
 ``` bash

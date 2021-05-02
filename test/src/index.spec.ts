@@ -90,7 +90,7 @@ describe('busywait.js', function() {
             })
             .catch((err) => {
                 checkIterationsArray(2);
-                err.should.equal('Exceeded number of iterations to wait');
+                err.message.should.equal('Exceeded number of iterations to wait');
                 done();
             })
             .catch((err) => {
@@ -109,7 +109,7 @@ describe('busywait.js', function() {
             })
             .catch((err) => {
                 checkIterationsArray(2);
-                err.should.equal('custom fail');
+                err.message.should.equal('custom fail');
                 done();
             })
             .catch((err) => {
@@ -130,7 +130,7 @@ describe('busywait.js', function() {
                 done('busywait should fail');
             })
             .catch((err) => {
-                err.should.equal('maxChecks must be a valid integer greater than 0');
+                err.message.should.equal('maxChecks must be a valid integer greater than 0');
                 done();
             });
     };
@@ -152,7 +152,7 @@ describe('busywait.js', function() {
                 done('busywait should fail');
             })
             .catch((err) => {
-                err.should.equal('sleepTime must be a valid integer greater than 0');
+                err.message.should.equal('sleepTime must be a valid integer greater than 0');
                 done();
             });
     };
@@ -178,7 +178,7 @@ describe('busywait.js', function() {
                 done('busywait should fail');
             })
             .catch((err) => {
-                err.should.equal('checkFn must be a function');
+                err.message.should.equal('checkFn must be a function');
                 done();
             });
     };

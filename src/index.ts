@@ -1,9 +1,8 @@
 'use strict';
 
-export type SyncCheckFn<T> = (iteration: number) => T;
+export type SyncCheckFn<T> = T extends Promise<any> ? never : (iteration: number) => T;
 export type ASyncCheckFn<T> = (iteration: number) => Promise<T>;
-
-export type CheckFn<T> = SyncCheckFn<T> | ASyncCheckFn<T>;
+export type CheckFn<T> = ASyncCheckFn<T> | SyncCheckFn<T>;
 
 export interface IBusyWaitOptions {
     failMsg?: string;
@@ -17,62 +16,47 @@ export interface IBusyWaitResult<T> {
     result: T;
 }
 
-export const busywait = <T>(checkFn: CheckFn<T>, _options: IBusyWaitOptions): Promise<IBusyWaitResult<T>> => {
-    const options = Object.assign({}, _options);
-    return checkArgs(checkFn, options)
-        .then(() => {
-            return eventLoop(wrapSyncMethod(checkFn), options);
-        });
-};
+const isFunction = (obj: any) => toString.call(obj) === '[object Function]';
 
-const checkArgs = <T>(checkFn: CheckFn<T>, options: IBusyWaitOptions): Promise<void> => {
+const getOptions = <T>(checkFn: CheckFn<T>, _options: IBusyWaitOptions): IBusyWaitOptions => {
+    const options = Object.assign({}, _options);
     if (isNaN(options.maxChecks) || options.maxChecks < 1) {
-        return Promise.reject('maxChecks must be a valid integer greater than 0');
+        throw new Error('maxChecks must be a valid integer greater than 0');
     }
     if (isNaN(options.sleepTime) || options.sleepTime < 1) {
-        return Promise.reject('sleepTime must be a valid integer greater than 0');
+        throw new Error('sleepTime must be a valid integer greater than 0');
     }
     if (!checkFn || !isFunction(checkFn)) {
-        return Promise.reject('checkFn must be a function');
+        throw new Error('checkFn must be a function');
     }
-    return Promise.resolve();
+    return options;
 };
 
-const wrapSyncMethod = <T>(checkFn: CheckFn<T>): ASyncCheckFn<T> => {
-    return (iteration: number) => {
-        return new Promise((resolve, reject) => {
-            try {
-                resolve(checkFn(iteration));
-            } catch (err) {
-                reject(err);
-            }
-        });
-    };
-};
+const wrapSyncMethod = <T>(checkFn: CheckFn<T>): ASyncCheckFn<T> => async (iteration: number) => checkFn(iteration);
 
 const eventLoop = <T>(checkFn: ASyncCheckFn<T>, options: IBusyWaitOptions): Promise<IBusyWaitResult<T>> => {
     return new Promise((resolve, reject) => {
         let iteration = 0;
-        const iterationCheck = () => {
+        const iterationCheck = async () => {
             iteration++;
-            checkFn(iteration)
-                .then((result: T) => {
-                    return resolve({
-                        iterations: iteration,
-                        result,
-                    });
-                })
-                .catch(() => {
-                    if (iteration === options.maxChecks) {
-                        return reject(options.failMsg || 'Exceeded number of iterations to wait');
-                    }
-                    setTimeout(iterationCheck, options.sleepTime);
+            try {
+                const result = await checkFn(iteration);
+                return resolve({
+                    iterations: iteration,
+                    result,
                 });
+            } catch (e) {
+                if (iteration === options.maxChecks) {
+                    return reject(new Error(options.failMsg || 'Exceeded number of iterations to wait'));
+                }
+                setTimeout(iterationCheck, options.sleepTime);
+            }
         };
         setTimeout(iterationCheck, options.waitFirst ? options.sleepTime : 0);
     });
 };
 
-const isFunction = (obj: any): boolean => {
-    return toString.call(obj) === '[object Function]';
+export const busywait = async <T>(checkFn: CheckFn<T>, _options: IBusyWaitOptions): Promise<IBusyWaitResult<T>> => {
+    const options = getOptions(checkFn, _options);
+    return eventLoop(wrapSyncMethod(checkFn), options);
 };
