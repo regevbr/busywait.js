@@ -186,4 +186,48 @@ describe('busywait.js', function() {
             });
     };
 
+    itParam('should fail on NaN multiplier', params, (done: Done, param: IParam) => {
+        return verifyMultiplierError(done, param, NaN);
+    });
+
+    itParam('should fail on invalid multiplier', params, (done: Done, param: IParam) => {
+        return verifyMultiplierError(done, param, 0);
+    });
+
+    const verifyMultiplierError = (done: Done, param: IParam, value: number): Promise<void> => {
+        return busywait(param.checkFn, {
+            sleepTime: 100,
+            multiplier: value,
+        })
+            .then(() => {
+                done('busywait should fail');
+            })
+            .catch((err) => {
+                err.message.should.equal('multiplier must be a valid integer greater than 1');
+                done();
+            });
+    };
+
+    itParam('should fail on NaN maxDelay', params, (done: Done, param: IParam) => {
+        return verifyMaxDelayError(done, param, NaN);
+    });
+
+    itParam('should fail on invalid maxDelay', params, (done: Done, param: IParam) => {
+        return verifyMaxDelayError(done, param, 0);
+    });
+
+    const verifyMaxDelayError = (done: Done, param: IParam, value: number): Promise<void> => {
+        return busywait(param.checkFn, {
+            sleepTime: 100,
+            maxDelay: value,
+        })
+            .then(() => {
+                done('busywait should fail');
+            })
+            .catch((err) => {
+                err.message.should.equal('maxDelay must be a valid integer greater than 1');
+                done();
+            });
+    };
+
 });
