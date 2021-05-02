@@ -25,7 +25,7 @@ const checkFn = async (iteration: number): Promise<string> => {
     if (Date.now() > waitUntil) {
         return 'success';
     }
-    throw new Erorr('custom error');
+    throw new Error('custom error');
 };
 
 (async () => {
