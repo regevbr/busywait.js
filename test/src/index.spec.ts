@@ -16,12 +16,13 @@ describe('busywait.js', function() {
 
     this.timeout(5000);
 
+    const waitTime = 2500;
     let waitUntil: number;
     let iterationsArray: number[];
 
     beforeEach(() => {
         iterationsArray = [];
-        waitUntil = Date.now() + 2500;
+        waitUntil = Date.now() + waitTime;
     });
 
     const checkIterationsArray = (iterations: number) => {
@@ -57,11 +58,16 @@ describe('busywait.js', function() {
 
     itParam('should complete', params, (param: IParam) => {
         return busywait(param.checkFn, {
-            sleepTime: 500,
+            backoff: {
+                type: 'LINEAR',
+                sleepTime: 500,
+            },
             maxChecks: 20,
         })
             .then((result: IBusyWaitResult<string>) => {
-                result.iterations.should.equal(6);
+                result.backoff.iterations.should.equal(6);
+                result.backoff.time.should.be.greaterThan(waitTime - 100);
+                result.backoff.time.should.be.lessThan(waitTime + 100);
                 result.result.should.equal(successMessage);
                 checkIterationsArray(6);
             });
@@ -69,12 +75,17 @@ describe('busywait.js', function() {
 
     itParam('should complete with less tries', params, (param: IParam) => {
         return busywait(param.checkFn, {
-            sleepTime: 500,
+            backoff: {
+                type: 'LINEAR',
+                sleepTime: 500,
+            },
             maxChecks: 20,
             waitFirst: true,
         })
             .then((result: IBusyWaitResult<string>) => {
-                result.iterations.should.equal(5);
+                result.backoff.iterations.should.equal(5);
+                result.backoff.time.should.be.greaterThan(waitTime - 100);
+                result.backoff.time.should.be.lessThan(waitTime + 100);
                 result.result.should.equal(successMessage);
                 checkIterationsArray(5);
             });
@@ -82,7 +93,10 @@ describe('busywait.js', function() {
 
     itParam('should fail on max checks', params, (done: Done, param: IParam) => {
         return busywait(param.checkFn, {
-            sleepTime: 500,
+            backoff: {
+                type: 'LINEAR',
+                sleepTime: 500,
+            },
             maxChecks: 2,
         })
             .then(() => {
@@ -100,7 +114,10 @@ describe('busywait.js', function() {
 
     itParam('should fail on max checks with custom error', params, (done: Done, param: IParam) => {
         return busywait(param.checkFn, {
-            sleepTime: 500,
+            backoff: {
+                type: 'LINEAR',
+                sleepTime: 500,
+            },
             maxChecks: 2,
             failMsg: 'custom fail',
         })
@@ -124,7 +141,10 @@ describe('busywait.js', function() {
     const verifyMaxChecksError = (done: Done, param: IParam, value?: number): Promise<void> => {
         return busywait(param.checkFn, {
             maxChecks: value || 0,
-            sleepTime: 500,
+            backoff: {
+                type: 'LINEAR',
+                sleepTime: 500,
+            },
         })
             .then(() => {
                 done('busywait should fail');
@@ -145,7 +165,10 @@ describe('busywait.js', function() {
 
     const verifySleepTimeError = (done: Done, param: IParam, value?: number): Promise<void> => {
         return busywait(param.checkFn, {
-            sleepTime: value || 0,
+            backoff: {
+                type: 'LINEAR',
+                sleepTime: value || 0,
+            },
             maxChecks: 500,
         })
             .then(() => {
@@ -171,7 +194,10 @@ describe('busywait.js', function() {
 
     const verifyCheckFuncError = (done: Done, param: IParam, value: any): Promise<void> => {
         return busywait(value, {
-            sleepTime: 500,
+            backoff: {
+                type: 'LINEAR',
+                sleepTime: 500,
+            },
             maxChecks: 500,
         })
             .then(() => {

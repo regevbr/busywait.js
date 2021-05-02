@@ -10,8 +10,9 @@
 Simple Async busy wait module for Node.JS
 
 ## Main features
--  Simple api to busy wait for a desired outcome
--  Slim library (65 lines of code, no dependencies)
+-  Simple api to busy wait for a desired outcome 
+-  Exponential backoff (with optional full jitter) support 
+-  Slim library (90 lines of code, no dependencies)
 -  Full typescript support
 
 ## Quick example
@@ -30,10 +31,13 @@ const checkFn = async (iteration: number): Promise<string> => {
 
 (async () => {
     const result = await busywait(checkFn, {
-        sleepTime: 500,
+        backoff: {
+            type: 'LINEAR',
+            sleepTime: 500,
+        },
         maxChecks: 20,
     })
-    console.log(`finished after ${result.iterations} iterations with result ${result.result}`);
+    console.log(`finished after ${result.backoff.time}ms (${result.backoff.iterations} iterations) with result ${result.result}`);
 })();
 ```
 Will result in:
@@ -44,7 +48,42 @@ running iteration 3
 running iteration 4
 running iteration 5
 running iteration 6
-finished after 6 iterations with result success
+finished after 2510ms (6 iterations) with result success
+```
+
+### Exponential backoff
+
+```typescript
+import { busywait } from 'busywait';
+
+const waitUntil = Date.now() + 2500;
+
+const checkFn = async (iteration: number): Promise<string> => {
+    console.log('running iteration', iteration);
+    if (Date.now() > waitUntil) {
+        return 'success';
+    }
+    throw new Error('custom error');
+};
+
+(async () => {
+    const result = await busywait(checkFn, {
+        backoff: {
+            type: 'EXPONENT',
+            initialSleepTime: 100,
+        },
+    })
+    console.log(`finished after ${result.backoff.time}ms (${result.backoff.iterations} iterations) with result ${result.result}`);
+})();
+```
+Will result in:
+``` bash
+running iteration 1
+running iteration 2
+running iteration 3
+running iteration 4
+running iteration 5
+finished after 3012ms (5 iterations) with result success
 ```
 
 ## Install
@@ -66,10 +105,10 @@ The function can either:
 ##### mandatory
 
 -  `sleepTime` - Time in ms to wait between checks  
--  `maxChecks` - The max number of checks to perform before failing 
 
 ##### optional
 
+-  `maxChecks` - The max number of checks to perform before failing
 -  `waitFirst` - Should we wait the `sleepTime` before performing the first check (default: false)  
 -  `failMsg` - Custom error message to reject the promise with
 
@@ -81,6 +120,7 @@ Return value is a promise.
 
 Promise resolved value:
 -  `iterations` - The number of iterations it took to finish
+-  `time` - The number of time it took to finish
 -  `result` - The resolved value of `checkFn`
 
 ## Contributing

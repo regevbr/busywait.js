@@ -1,4 +1,4 @@
-import { busywait } from '../dist'
+import {busywait} from '../dist'
 
 const waitUntil = Date.now() + 2500;
 
@@ -12,8 +12,11 @@ const checkFn = async (iteration: number): Promise<string> => {
 
 (async () => {
     const result = await busywait(checkFn, {
-        sleepTime: 500,
+        backoff: {
+            type: 'EXPONENT',
+            initialSleepTime: 100,
+        },
         maxChecks: 20,
     })
-    console.log(`finished after ${result.iterations} iterations with result ${result.result}`);
+    console.log(`finished after ${result.backoff.time}ms (${result.backoff.iterations} iterations) with result ${result.result}`);
 })();
