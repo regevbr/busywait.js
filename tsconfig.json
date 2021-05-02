@@ -18,6 +18,7 @@
     "alwaysStrict": true,
     "noImplicitUseStrict": false,
     "preserveSymlinks": true,
+    "noEmitHelpers": true,
     "rootDir": "src",
     "sourceMap": true,
     "lib": [

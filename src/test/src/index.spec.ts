@@ -45,7 +45,7 @@ describe('busywait.js', function() {
 
     const checkJitterDelaysArray = (delays: number[]) => {
         for (let i = 0; i < iterationsArray.length; i++) {
-            delaysArray[i].should.be.lessThan(delays[i]);
+            delaysArray[i].should.be.lessThan(delays[i] + 1);
         }
     };
 

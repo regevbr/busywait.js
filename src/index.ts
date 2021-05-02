@@ -1,3 +1,37 @@
+/* istanbul ignore next */
+// @ts-ignore
+global.__awaiter = (this && this.__awaiter) || ((thisArg, _arguments, P, generator) => {
+    function adopt(value: any) {
+        return value instanceof P ? value : new P((resolve: any) => {
+            resolve(value);
+        });
+    }
+
+    return new (P || (P = Promise))((resolve: any, reject: any) => {
+        function fulfilled(value: any) {
+            try {
+                step(generator.next(value));
+            } catch (e) {
+                reject(e);
+            }
+        }
+
+        function rejected(value: any) {
+            try {
+                step(generator.throw(value));
+            } catch (e) {
+                reject(e);
+            }
+        }
+
+        function step(result: any) {
+            result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected);
+        }
+
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+});
+
 export type SyncCheckFn<T> = T extends Promise<any> ? never : (iteration: number, delay: number) => T;
 export type ASyncCheckFn<T> = (iteration: number, delay: number) => Promise<T>;
 export type CheckFn<T> = ASyncCheckFn<T> | SyncCheckFn<T>;
