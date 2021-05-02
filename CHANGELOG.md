@@ -12,6 +12,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 -  Exponential backoff (with optional full jitter) support
 -  Added to the result, the time it took to finish
+-  Added delay information to the checked function call 
 ### Fixed
 -  Better type inference
 -  Updated readme

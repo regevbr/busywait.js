@@ -1,5 +1,3 @@
-'use strict';
-
 import {busywait, CheckFn, IBusyWaitResult} from '../../dist';
 // @ts-ignore
 import {itParam} from 'mocha-param';
@@ -58,10 +56,7 @@ describe('busywait.js', function() {
 
     itParam('should complete', params, (param: IParam) => {
         return busywait(param.checkFn, {
-            backoff: {
-                type: 'LINEAR',
-                sleepTime: 500,
-            },
+            sleepTime: 500,
             maxChecks: 20,
         })
             .then((result: IBusyWaitResult<string>) => {
@@ -75,10 +70,7 @@ describe('busywait.js', function() {
 
     itParam('should complete with less tries', params, (param: IParam) => {
         return busywait(param.checkFn, {
-            backoff: {
-                type: 'LINEAR',
-                sleepTime: 500,
-            },
+            sleepTime: 500,
             maxChecks: 20,
             waitFirst: true,
         })
@@ -93,10 +85,7 @@ describe('busywait.js', function() {
 
     itParam('should fail on max checks', params, (done: Done, param: IParam) => {
         return busywait(param.checkFn, {
-            backoff: {
-                type: 'LINEAR',
-                sleepTime: 500,
-            },
+            sleepTime: 500,
             maxChecks: 2,
         })
             .then(() => {
@@ -114,10 +103,7 @@ describe('busywait.js', function() {
 
     itParam('should fail on max checks with custom error', params, (done: Done, param: IParam) => {
         return busywait(param.checkFn, {
-            backoff: {
-                type: 'LINEAR',
-                sleepTime: 500,
-            },
+            sleepTime: 500,
             maxChecks: 2,
             failMsg: 'custom fail',
         })
@@ -140,17 +126,14 @@ describe('busywait.js', function() {
 
     const verifyMaxChecksError = (done: Done, param: IParam, value?: number): Promise<void> => {
         return busywait(param.checkFn, {
+            sleepTime: 500,
             maxChecks: value || 0,
-            backoff: {
-                type: 'LINEAR',
-                sleepTime: 500,
-            },
         })
             .then(() => {
                 done('busywait should fail');
             })
             .catch((err) => {
-                err.message.should.equal('maxChecks must be a valid integer greater than 0');
+                err.message.should.equal('maxChecks must be a valid integer greater than 1');
                 done();
             });
     };
@@ -165,17 +148,14 @@ describe('busywait.js', function() {
 
     const verifySleepTimeError = (done: Done, param: IParam, value?: number): Promise<void> => {
         return busywait(param.checkFn, {
-            backoff: {
-                type: 'LINEAR',
-                sleepTime: value || 0,
-            },
+            sleepTime: value || 0,
             maxChecks: 500,
         })
             .then(() => {
                 done('busywait should fail');
             })
             .catch((err) => {
-                err.message.should.equal('sleepTime must be a valid integer greater than 0');
+                err.message.should.equal('sleepTime must be a valid integer greater than 1');
                 done();
             });
     };
@@ -194,10 +174,7 @@ describe('busywait.js', function() {
 
     const verifyCheckFuncError = (done: Done, param: IParam, value: any): Promise<void> => {
         return busywait(value, {
-            backoff: {
-                type: 'LINEAR',
-                sleepTime: 500,
-            },
+            sleepTime: 500,
             maxChecks: 500,
         })
             .then(() => {
