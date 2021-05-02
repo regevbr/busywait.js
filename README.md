@@ -10,44 +10,116 @@
 Simple Async busy wait module for Node.JS
 
 ## Main features
--  Simple api to busy wait for a desired outcome
--  Slim library (65 lines of code, no dependencies)
+-  Simple api to busy wait for a desired outcome 
+-  Exponential backoff (with optional full jitter) support 
+-  Slim library (single file, 100 lines of code, no dependencies)
 -  Full typescript support
 
 ## Quick example
 ```typescript
 import { busywait } from 'busywait';
-import {IBusyWaitResult} from 'busywait';
 
 const waitUntil = Date.now() + 2500;
-const checkFn = (iteration: number): Promise<string> => {
-    return new Promise((resolve, reject) => {
-        console.log('running iteration', iteration);
-        if (Date.now() > waitUntil) {
-            return resolve('success');
-        } else {
-            return reject();
-        }
-    });
+
+const checkFn = async (iteration: number, delay: number): Promise<string> => {
+    console.log(`Running iteration ${iteration} after delay of ${delay}ms`);
+    if (Date.now() > waitUntil) {
+        return `success`;
+    }
+    throw new Error('custom error');
 };
-busywait(checkFn, {
-    sleepTime: 500,
-    maxChecks: 20,
-})
-    .then((result: IBusyWaitResult<string>) => {
-        console.log('finished after', result.iterations, 'iterations', 'with' +
-            ' result', result.result);
-    });
+
+(async () => {
+    const result = await busywait(checkFn, {
+        sleepTime: 500,
+        maxChecks: 20,
+    })
+    console.log(`Finished after ${result.backoff.time}ms (${result.backoff.iterations} iterations) with result ${result.result}`);
+})();
 ```
+
 Will result in:
 ``` bash
-running iteration 1
-running iteration 2
-running iteration 3
-running iteration 4
-running iteration 5
-running iteration 6
-finished after 6 iterations with result success
+Running iteration 1 after delay of 0ms
+Running iteration 2 after delay of 500ms
+Running iteration 3 after delay of 500ms
+Running iteration 4 after delay of 500ms
+Running iteration 5 after delay of 500ms
+Running iteration 6 after delay of 500ms
+Finished after 2511ms (6 iterations) with result success
+```
+
+### Exponential backoff
+
+```typescript
+import { busywait } from 'busywait';
+
+const waitUntil = Date.now() + 2500;
+
+const checkFn = async (iteration: number, delay: number): Promise<string> => {
+    console.log(`Running iteration ${iteration} after delay of ${delay}ms`);
+    if (Date.now() > waitUntil) {
+        return `success`;
+    }
+    throw new Error('custom error');
+};
+
+(async () => {
+    const result = await busywait(checkFn, {
+        sleepTime: 100,
+        jitter: 'none',
+        multiplier: 2,
+    })
+    console.log(`Finished after ${result.backoff.time}ms (${result.backoff.iterations} iterations) with result ${result.result}`);
+})();
+```
+
+Will result in:
+``` bash
+Running iteration 1 after delay of 0ms
+Running iteration 2 after delay of 100ms
+Running iteration 3 after delay of 200ms
+Running iteration 4 after delay of 400ms
+Running iteration 5 after delay of 800ms
+Running iteration 6 after delay of 1600ms
+Finished after 3111ms (6 iterations) with result success
+```
+
+### Exponential backoff with full jitter
+
+```typescript
+import { busywait } from 'busywait';
+
+const waitUntil = Date.now() + 2500;
+
+const checkFn = async (iteration: number, delay: number): Promise<string> => {
+    console.log(`Running iteration ${iteration} after delay of ${delay}ms`);
+    if (Date.now() > waitUntil) {
+        return `success`;
+    }
+    throw new Error('custom error');
+};
+
+(async () => {
+    const result = await busywait(checkFn, {
+        sleepTime: 100,
+        jitter: 'full',
+        multiplier: 2,
+        waitFirst: true,
+    })
+    console.log(`Finished after ${result.backoff.time}ms (${result.backoff.iterations} iterations) with result ${result.result}`);
+})();
+```
+
+Will result in:
+``` bash
+Running iteration 1 after delay of 78ms
+Running iteration 2 after delay of 154ms
+Running iteration 3 after delay of 228ms
+Running iteration 4 after delay of 605ms
+Running iteration 5 after delay of 136ms
+Running iteration 6 after delay of 1652ms
+Finished after 2863ms (6 iterations) with result success
 ```
 
 ## Install
@@ -62,28 +134,32 @@ npm install busywait
 A function that takes a single optional argument, which is the current iteration number.
 The function can either:
 -  return a non promised value (in which case, a failed check should throw an error)
--  return promised value (in which case, a failed check should return a rejection)
+-  return promised value (in which case, a failed check should return a rejected promise)
 
 #### options
 
 ##### mandatory
 
--  `sleepTime` - Time in ms to wait between checks  
--  `maxChecks` - The max number of checks to perform before failing 
+-  `sleepTime` - Time in ms to wait between checks. In the exponential mode, will be the base sleep time.
 
 ##### optional
 
+-  `multiplier` - The exponential multiplier. Set to 2 or higher to achieve exponential backoff (default: 1 - i.e. linear backoff)
+-  `maxDelay` - The max delay value between checks in ms (default: infinity)
+-  `maxChecks` - The max number of checks to perform before failing (default: infinity)
 -  `waitFirst` - Should we wait the `sleepTime` before performing the first check (default: false)  
+-  `jitter` - ('none' | 'full') The [jitter](https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/) mode to use (default: none)
 -  `failMsg` - Custom error message to reject the promise with
 
 ### Return value
 
 Return value is a promise.
--  The promise will be resolved if the `checkFn` returned a valid value (resolved promise or did not throw an error)  within a legal number of checks.
--  The promise will be rejected if the `checkFn` rejected ( or threw an error) `maxChecks` times.
+-  The promise will be resolved if the `checkFn` was resolved within a legal number of checks.
+-  The promise will be rejected if the `checkFn` rejected (or threw an error) `maxChecks` times.
 
 Promise resolved value:
--  `iterations` - The number of iterations it took to finish
+-  `backoff.iterations` - The number of iterations it took to finish
+-  `backoff.time` - The number of time it took to finish
 -  `result` - The resolved value of `checkFn`
 
 ## Contributing

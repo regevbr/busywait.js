@@ -21,6 +21,8 @@ coverage
 
 # source files
 src
+CHANGELOG.md
+src/test/
 test
 scripts
 
