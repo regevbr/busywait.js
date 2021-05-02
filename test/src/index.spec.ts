@@ -12,34 +12,55 @@ type Done = (error?: any) => void;
 
 describe('busywait.js', function() {
 
-    this.timeout(5000);
+    this.timeout(10000);
 
     const waitTime = 2500;
     let waitUntil: number;
     let iterationsArray: number[];
+    let delaysArray: number[];
 
     beforeEach(() => {
         iterationsArray = [];
+        delaysArray = [];
         waitUntil = Date.now() + waitTime;
     });
 
-    const checkIterationsArray = (iterations: number) => {
+    const checkIterationsArray = (iterations: number, delay: number, startDelay: boolean) => {
         iterationsArray.length.should.equal(iterations);
+        delaysArray.length.should.equal(iterations);
         for (let i = 0; i < iterations; i++) {
             iterationsArray[i].should.equal(i + 1);
+            delaysArray[i].should.equal((!startDelay && i === 0) ? 0 : delay);
         }
     };
 
-    const syncCheck = (iteration: number): string => {
+    const checkIterationsAndDelaysArray = (iterations: number, delays: number[]) => {
+        iterationsArray.length.should.equal(iterations);
+        delaysArray.length.should.equal(iterations);
+        for (let i = 0; i < iterations; i++) {
+            iterationsArray[i].should.equal(i + 1);
+            delaysArray[i].should.equal(delays[i]);
+        }
+    };
+
+    const checkJitterDelaysArray = (delays: number[]) => {
+        for (let i = 0; i < iterationsArray.length; i++) {
+            delaysArray[i].should.be.lessThan(delays[i]);
+        }
+    };
+
+    const syncCheck = (iteration: number, delay: number): string => {
         iterationsArray.push(iteration);
+        delaysArray.push(delay);
         if (Date.now() > waitUntil) {
             return successMessage;
         }
         throw new Error('not the time yet');
     };
 
-    const asyncCheck = (iteration: number): Promise<string> => {
+    const asyncCheck = (iteration: number, delay: number): Promise<string> => {
         iterationsArray.push(iteration);
+        delaysArray.push(delay);
         return new Promise((resolve, reject) => {
             if (Date.now() > waitUntil) {
                 return resolve(successMessage);
@@ -64,7 +85,49 @@ describe('busywait.js', function() {
                 result.backoff.time.should.be.greaterThan(waitTime - 100);
                 result.backoff.time.should.be.lessThan(waitTime + 100);
                 result.result.should.equal(successMessage);
-                checkIterationsArray(6);
+                checkIterationsArray(6, 500, false);
+            });
+    });
+
+    itParam('should complete with exponential backoff and jitter', params, (param: IParam) => {
+        return busywait(param.checkFn, {
+            sleepTime: 500,
+            multiplier: 2,
+            waitFirst: true,
+            jitter: 'full',
+        })
+            .then((result: IBusyWaitResult<string>) => {
+                result.result.should.equal(successMessage);
+                checkJitterDelaysArray([500, 1_000, 2_000, 4_000, 8_000, 16_000, 32_000, 64_000]);
+            });
+    });
+
+    itParam('should complete with exponential backoff', params, (param: IParam) => {
+        return busywait(param.checkFn, {
+            sleepTime: 500,
+            multiplier: 2,
+        })
+            .then((result: IBusyWaitResult<string>) => {
+                result.backoff.iterations.should.equal(4);
+                result.backoff.time.should.be.greaterThan(waitTime - 100);
+                result.backoff.time.should.be.lessThan(waitTime + 1500);
+                result.result.should.equal(successMessage);
+                checkIterationsAndDelaysArray(4, [0, 500, 1000, 2000]);
+            });
+    });
+
+    itParam('should complete with exponential backoff and start delay', params, (param: IParam) => {
+        return busywait(param.checkFn, {
+            sleepTime: 500,
+            multiplier: 2,
+            waitFirst: true,
+        })
+            .then((result: IBusyWaitResult<string>) => {
+                result.backoff.iterations.should.equal(3);
+                result.backoff.time.should.be.greaterThan(waitTime - 100);
+                result.backoff.time.should.be.lessThan(waitTime + 1500);
+                result.result.should.equal(successMessage);
+                checkIterationsAndDelaysArray(3, [500, 1000, 2000]);
             });
     });
 
@@ -79,7 +142,7 @@ describe('busywait.js', function() {
                 result.backoff.time.should.be.greaterThan(waitTime - 100);
                 result.backoff.time.should.be.lessThan(waitTime + 100);
                 result.result.should.equal(successMessage);
-                checkIterationsArray(5);
+                checkIterationsArray(5, 500, true);
             });
     });
 
@@ -92,7 +155,7 @@ describe('busywait.js', function() {
                 done('busywait should fail');
             })
             .catch((err) => {
-                checkIterationsArray(2);
+                checkIterationsArray(2, 500, false);
                 err.message.should.equal('Exceeded number of iterations to wait');
                 done();
             })
@@ -111,7 +174,7 @@ describe('busywait.js', function() {
                 done('busywait should fail');
             })
             .catch((err) => {
-                checkIterationsArray(2);
+                checkIterationsArray(2, 500, false);
                 err.message.should.equal('custom fail');
                 done();
             })

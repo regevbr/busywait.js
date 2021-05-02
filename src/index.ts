@@ -79,11 +79,13 @@ export const busywait = async <T>(_checkFn: CheckFn<T>, _options: IBusyWaitOptio
     const delayer = getDelayer(options);
     const checkFn = wrapSyncMethod(_checkFn);
     let iteration = 0;
+    let delayerIteration = options.waitFirst ? 0 : -1;
     const start = Date.now();
-    let delay = options.waitFirst ? delayer(iteration) : 0;
+    let delay = options.waitFirst ? delayer(delayerIteration) : 0;
     const {promise, resolve, reject} = unwrapPromise<IBusyWaitResult<T>>();
     const iterationCheck = async () => {
         iteration++;
+        delayerIteration++;
         try {
             const result = await checkFn(iteration, delay);
             return resolve({
@@ -97,7 +99,7 @@ export const busywait = async <T>(_checkFn: CheckFn<T>, _options: IBusyWaitOptio
             if (options.maxChecks && iteration === options.maxChecks) {
                 return reject(new Error(options.failMsg || 'Exceeded number of iterations to wait'));
             }
-            delay = delayer(iteration);
+            delay = delayer(delayerIteration);
             setTimeout(iterationCheck, delay);
         }
     };
