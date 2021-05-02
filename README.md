@@ -12,7 +12,7 @@ Simple Async busy wait module for Node.JS
 ## Main features
 -  Simple api to busy wait for a desired outcome 
 -  Exponential backoff (with optional full jitter) support 
--  Slim library (single file, 85 lines of code, no dependencies)
+-  Slim library (single file, 100 lines of code, no dependencies)
 -  Full typescript support
 
 ## Quick example
