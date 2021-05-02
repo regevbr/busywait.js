@@ -77,11 +77,12 @@ const checkFn = async (iteration: number, delay: number): Promise<string> => {
 Will result in:
 ``` bash
 Running iteration 1 after delay of 0ms
-Running iteration 2 after delay of 200ms
-Running iteration 3 after delay of 400ms
-Running iteration 4 after delay of 800ms
-Running iteration 5 after delay of 1600ms
-Finished after 3011ms (5 iterations) with result success
+Running iteration 2 after delay of 100ms
+Running iteration 3 after delay of 200ms
+Running iteration 4 after delay of 400ms
+Running iteration 5 after delay of 800ms
+Running iteration 6 after delay of 1600ms
+Finished after 3111ms (6 iterations) with result success
 ```
 
 ### Exponential backoff with full jitter
@@ -104,6 +105,7 @@ const checkFn = async (iteration: number, delay: number): Promise<string> => {
         sleepTime: 100,
         jitter: 'full',
         multiplier: 2,
+        waitFirst: true,
     })
     console.log(`Finished after ${result.backoff.time}ms (${result.backoff.iterations} iterations) with result ${result.result}`);
 })();
@@ -111,13 +113,13 @@ const checkFn = async (iteration: number, delay: number): Promise<string> => {
 
 Will result in:
 ``` bash
-Running iteration 1 after delay of 0ms
+Running iteration 1 after delay of 78ms
 Running iteration 2 after delay of 154ms
 Running iteration 3 after delay of 228ms
 Running iteration 4 after delay of 605ms
 Running iteration 5 after delay of 136ms
 Running iteration 6 after delay of 1652ms
-Finished after 2785ms (6 iterations) with result success
+Finished after 2863ms (6 iterations) with result success
 ```
 
 ## Install
