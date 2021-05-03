@@ -7,22 +7,25 @@
 [![devDependencies Status](https://david-dm.org/regevbr/busywait.js/dev-status.svg)](https://david-dm.org/regevbr/busywait.js?type=dev)
 
 # busywait.js
+
 Simple Async busy wait module for Node.JS
 
 ## Main features
--  Simple api to busy wait for a desired outcome 
--  Exponential backoff (with optional full jitter) support 
--  Slim library (single file, 100 lines of code, no dependencies)
--  Full typescript support
+
+- Simple api to busy wait for a desired outcome
+- Exponential backoff (with optional full jitter) support
+- Slim library (single file, 100 lines of code, no dependencies)
+- Full typescript support
 
 ## Quick example
+
 ```typescript
-import { busywait } from 'busywait';
+import {busywait} from 'busywait';
 
 const waitUntil = Date.now() + 2500;
 
-const checkFn = async (iteration: number, delay: number): Promise<string> => {
-    console.log(`Running iteration ${iteration} after delay of ${delay}ms`);
+const checkFn = async (iteration: number, delay: number, totalDelay: number): Promise<string> => {
+    console.log(`Running iteration ${iteration} after delay of ${delay}ms and total delay of ${totalDelay}`);
     if (Date.now() > waitUntil) {
         return `success`;
     }
@@ -39,25 +42,26 @@ const checkFn = async (iteration: number, delay: number): Promise<string> => {
 ```
 
 Will result in:
+
 ``` bash
-Running iteration 1 after delay of 0ms
-Running iteration 2 after delay of 500ms
-Running iteration 3 after delay of 500ms
-Running iteration 4 after delay of 500ms
-Running iteration 5 after delay of 500ms
-Running iteration 6 after delay of 500ms
+Running iteration 1 after delay of 0ms and total delay of 1
+Running iteration 2 after delay of 500ms and total delay of 504
+Running iteration 3 after delay of 500ms and total delay of 1007
+Running iteration 4 after delay of 500ms and total delay of 1508
+Running iteration 5 after delay of 500ms and total delay of 2010
+Running iteration 6 after delay of 500ms and total delay of 2511
 Finished after 2511ms (6 iterations) with result success
 ```
 
 ### Exponential backoff
 
 ```typescript
-import { busywait } from 'busywait';
+import {busywait} from 'busywait';
 
 const waitUntil = Date.now() + 2500;
 
-const checkFn = async (iteration: number, delay: number): Promise<string> => {
-    console.log(`Running iteration ${iteration} after delay of ${delay}ms`);
+const checkFn = async (iteration: number, delay: number, totalDelay: number): Promise<string> => {
+    console.log(`Running iteration ${iteration} after delay of ${delay}ms and total delay of ${totalDelay}`);
     if (Date.now() > waitUntil) {
         return `success`;
     }
@@ -75,25 +79,26 @@ const checkFn = async (iteration: number, delay: number): Promise<string> => {
 ```
 
 Will result in:
+
 ``` bash
-Running iteration 1 after delay of 0ms
-Running iteration 2 after delay of 100ms
-Running iteration 3 after delay of 200ms
-Running iteration 4 after delay of 400ms
-Running iteration 5 after delay of 800ms
-Running iteration 6 after delay of 1600ms
-Finished after 3111ms (6 iterations) with result success
+Running iteration 1 after delay of 0ms and total delay of 1
+Running iteration 2 after delay of 100ms and total delay of 104
+Running iteration 3 after delay of 200ms and total delay of 306
+Running iteration 4 after delay of 400ms and total delay of 707
+Running iteration 5 after delay of 800ms and total delay of 1509
+Running iteration 6 after delay of 1600ms and total delay of 3110
+Finished after 3110ms (6 iterations) with result success
 ```
 
 ### Exponential backoff with full jitter
 
 ```typescript
-import { busywait } from 'busywait';
+import {busywait} from 'busywait';
 
 const waitUntil = Date.now() + 2500;
 
-const checkFn = async (iteration: number, delay: number): Promise<string> => {
-    console.log(`Running iteration ${iteration} after delay of ${delay}ms`);
+const checkFn = async (iteration: number, delay: number, totalDelay: number): Promise<string> => {
+    console.log(`Running iteration ${iteration} after delay of ${delay}ms and total delay of ${totalDelay}`);
     if (Date.now() > waitUntil) {
         return `success`;
     }
@@ -112,17 +117,19 @@ const checkFn = async (iteration: number, delay: number): Promise<string> => {
 ```
 
 Will result in:
+
 ``` bash
-Running iteration 1 after delay of 78ms
-Running iteration 2 after delay of 154ms
-Running iteration 3 after delay of 228ms
-Running iteration 4 after delay of 605ms
-Running iteration 5 after delay of 136ms
-Running iteration 6 after delay of 1652ms
-Finished after 2863ms (6 iterations) with result success
+Running iteration 1 after delay of 31ms and total delay of 31
+Running iteration 2 after delay of 165ms and total delay of 199
+Running iteration 3 after delay of 217ms and total delay of 417
+Running iteration 4 after delay of 378ms and total delay of 796
+Running iteration 5 after delay of 1397ms and total delay of 2195
+Running iteration 6 after delay of 1656ms and total delay of 3853
+Finished after 3853ms (6 iterations) with result success
 ```
 
 ## Install
+
 ```bash
 npm install busywait
 ```
@@ -132,35 +139,49 @@ npm install busywait
 #### checkFn
 
 A function that takes a single optional argument, which is the current iteration number.
-The function can either:
--  return a non promised value (in which case, a failed check should throw an error)
--  return promised value (in which case, a failed check should return a rejected promise)
+
+##### Args
+
+- `iteration` - The current iteration number (starting from 1)
+- `delay` - The last delay (in ms) that was applied
+- `totalDelay` - The total delay (in ms) applied so far
+
+##### Return
+
+Either:
+
+- a non promised value (in which case, a failed check should throw an error)
+- a promised value (in which case, a failed check should return a rejected promise)
 
 #### options
 
 ##### mandatory
 
--  `sleepTime` - Time in ms to wait between checks. In the exponential mode, will be the base sleep time.
+- `sleepTime` - Time in ms to wait between checks. In the exponential mode, will be the base sleep time.
 
 ##### optional
 
--  `multiplier` - The exponential multiplier. Set to 2 or higher to achieve exponential backoff (default: 1 - i.e. linear backoff)
--  `maxDelay` - The max delay value between checks in ms (default: infinity)
--  `maxChecks` - The max number of checks to perform before failing (default: infinity)
--  `waitFirst` - Should we wait the `sleepTime` before performing the first check (default: false)  
--  `jitter` - ('none' | 'full') The [jitter](https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/) mode to use (default: none)
--  `failMsg` - Custom error message to reject the promise with
+- `multiplier` - The exponential multiplier. Set to 2 or higher to achieve exponential backoff (default: 1 - i.e. linear
+  backoff)
+- `maxDelay` - The max delay value between checks in ms (default: infinity)
+- `maxChecks` - The max number of checks to perform before failing (default: infinity)
+- `waitFirst` - Should we wait the `sleepTime` before performing the first check (default: false)
+- `jitter` - ('none' | 'full') The [jitter](https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/)
+  mode to use (default: none)
+- `failMsg` - Custom error message to reject the promise with
 
 ### Return value
 
 Return value is a promise.
--  The promise will be resolved if the `checkFn` was resolved within a legal number of checks.
--  The promise will be rejected if the `checkFn` rejected (or threw an error) `maxChecks` times.
+
+- The promise will be resolved if the `checkFn` was resolved within a legal number of checks.
+- The promise will be rejected if the `checkFn` rejected (or threw an error) `maxChecks` times.
 
 Promise resolved value:
--  `backoff.iterations` - The number of iterations it took to finish
--  `backoff.time` - The number of time it took to finish
--  `result` - The resolved value of `checkFn`
+
+- `backoff.iterations` - The number of iterations it took to finish
+- `backoff.time` - The number of time it took to finish
+- `result` - The resolved value of `checkFn`
 
 ## Contributing
 

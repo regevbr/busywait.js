@@ -1,6 +1,7 @@
 /* istanbul ignore next */
 // @ts-ignore
-global.__awaiter = (this && this.__awaiter) || ((thisArg, _arguments, P, generator) => {
+// tslint:disable-next-line:variable-name
+const __awaiter = (thisArg, _arguments, P, generator) => {
     function adopt(value: any) {
         return value instanceof P ? value : new P((resolve: any) => {
             resolve(value);
@@ -30,10 +31,11 @@ global.__awaiter = (this && this.__awaiter) || ((thisArg, _arguments, P, generat
 
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
-});
+};
 
-export type SyncCheckFn<T> = T extends Promise<any> ? never : (iteration: number, delay: number) => T;
-export type ASyncCheckFn<T> = (iteration: number, delay: number) => Promise<T>;
+type _CheckFn<T> = (iteration: number, delay: number, totalDelay: number) => T;
+export type SyncCheckFn<T> = T extends Promise<any> ? never : _CheckFn<T>;
+export type ASyncCheckFn<T> = _CheckFn<Promise<T>>;
 export type CheckFn<T> = ASyncCheckFn<T> | SyncCheckFn<T>;
 
 export type Jitter = 'none' | 'full';
@@ -61,7 +63,22 @@ type Reject = (error: Error) => void;
 type Delayer = (iteration: number) => number;
 
 const isFunction = (value: any): value is () => any => toString.call(value) === '[object Function]';
+
 const isNumber = (value: any): value is number => typeof value === 'number';
+
+const unwrapPromise = <T>() => {
+    let resolve: Resolve<T>;
+    let reject: Reject;
+    const promise = new Promise<T>((_resolve, _reject) => {
+        resolve = _resolve;
+        reject = _reject;
+    });
+    // @ts-expect-error
+    return {promise, resolve, reject};
+}
+
+const wrapSyncMethod = <T>(checkFn: CheckFn<T>): ASyncCheckFn<T> =>
+    async (iteration: number, delay: number, totalDelay: number) => checkFn(iteration, delay, totalDelay);
 
 const getAndValidateOptions = <T>(checkFn: CheckFn<T>, _options: IBusyWaitOptions): IBusyWaitOptions => {
     const options = Object.assign({}, _options);
@@ -85,20 +102,6 @@ const getAndValidateOptions = <T>(checkFn: CheckFn<T>, _options: IBusyWaitOption
     return options;
 };
 
-const wrapSyncMethod = <T>(checkFn: CheckFn<T>): ASyncCheckFn<T> =>
-    async (iteration: number, delay: number) => checkFn(iteration, delay);
-
-const unwrapPromise = <T>() => {
-    let resolve: Resolve<T>;
-    let reject: Reject;
-    const promise = new Promise<T>((_resolve, _reject) => {
-        resolve = _resolve;
-        reject = _reject;
-    });
-    // @ts-expect-error
-    return {promise, resolve, reject};
-}
-
 const getDelayer = (options: IBusyWaitOptions): Delayer => (iteration: number) => {
     let delay = options.sleepTime * Math.pow(options.multiplier || 1, iteration);
     delay = Math.min(delay, options.maxDelay || Infinity);
@@ -108,35 +111,62 @@ const getDelayer = (options: IBusyWaitOptions): Delayer => (iteration: number) =
     return delay;
 }
 
-export const busywait = async <T>(_checkFn: CheckFn<T>, _options: IBusyWaitOptions): Promise<IBusyWaitResult<T>> => {
-    const options = getAndValidateOptions(_checkFn, _options);
+interface IIterationState<T> {
+    iteration: number;
+    delayerIteration: number;
+    delay: number;
+    readonly startTime: number;
+    resolve: Resolve<IBusyWaitResult<T>>;
+    reject: Reject;
+    promise: Promise<IBusyWaitResult<T>>;
+    options: IBusyWaitOptions;
+    delayer: Delayer;
+    checkFn: ASyncCheckFn<T>;
+}
+
+const buildIterationState = <T>(checkFn: CheckFn<T>, _options: IBusyWaitOptions): IIterationState<T> => {
+    const options = getAndValidateOptions(checkFn, _options);
     const delayer = getDelayer(options);
-    const checkFn = wrapSyncMethod(_checkFn);
-    let iteration = 0;
-    let delayerIteration = options.waitFirst ? 0 : -1;
-    const start = Date.now();
-    let delay = options.waitFirst ? delayer(delayerIteration) : 0;
-    const {promise, resolve, reject} = unwrapPromise<IBusyWaitResult<T>>();
-    const iterationCheck = async () => {
-        iteration++;
-        delayerIteration++;
+    const delayerIteration = options.waitFirst ? 0 : -1;
+    return {
+        iteration: 0,
+        delayerIteration,
+        startTime: Date.now(),
+        delay: options.waitFirst ? delayer(delayerIteration) : 0,
+        options,
+        delayer,
+        checkFn: wrapSyncMethod(checkFn),
+        ...unwrapPromise<IBusyWaitResult<T>>(),
+    }
+}
+
+const iterationCheck = <T>(state: IIterationState<T>) => {
+    const iterationRun = async () => {
+        state.iteration++;
+        state.delayerIteration++;
         try {
-            const result = await checkFn(iteration, delay);
-            return resolve({
+            const totalDelay = Date.now() - state.startTime;
+            const result = await state.checkFn(state.iteration, state.delay, totalDelay);
+            return state.resolve({
                 backoff: {
-                    iterations: iteration,
-                    time: Date.now() - start,
+                    iterations: state.iteration,
+                    time: totalDelay,
                 },
                 result,
             });
         } catch (e) {
-            if (options.maxChecks && iteration === options.maxChecks) {
-                return reject(new Error(options.failMsg || 'Exceeded number of iterations to wait'));
+            if (state.options.maxChecks && state.iteration === state.options.maxChecks) {
+                return state.reject(new Error(state.options.failMsg || 'Exceeded number of iterations to wait'));
             }
-            delay = delayer(delayerIteration);
-            setTimeout(iterationCheck, delay);
+            state.delay = state.delayer(state.delayerIteration);
+            setTimeout(iterationRun, state.delay);
         }
     };
-    setTimeout(iterationCheck, delay);
-    return promise;
+    setTimeout(iterationRun, state.delay);
+    return state.promise;
+}
+
+export const busywait = async <T>(checkFn: CheckFn<T>, options: IBusyWaitOptions): Promise<IBusyWaitResult<T>> => {
+    const iterationState = buildIterationState(checkFn, options)
+    return iterationCheck(iterationState);
 };

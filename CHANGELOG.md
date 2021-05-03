@@ -4,6 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## Development
 -  nothing yet
 
+## [v3.1.0](https://github.com/regevbr/busywait.js/compare/v3.0.0...v3.1.0)
+### Added
+-  Added total delay information to the checked function call
+### Fixed
+-  Stopped messing the global stop with the `__awaiter` helper function
+-  Fixed checkFn doc in readme
+
 ## [v3.0.0](https://github.com/regevbr/busywait.js/compare/v2.0.0...v3.0.0)
 ### Breaking changes
 -  Errors are now an instance of `Error` and not plain strings

@@ -18,49 +18,64 @@ describe('busywait.js', function() {
     let waitUntil: number;
     let iterationsArray: number[];
     let delaysArray: number[];
+    let totalDelaysArray: number[];
 
     beforeEach(() => {
         iterationsArray = [];
         delaysArray = [];
+        totalDelaysArray = [];
         waitUntil = Date.now() + waitTime;
     });
 
     const checkIterationsArray = (iterations: number, delay: number, startDelay: boolean) => {
         iterationsArray.length.should.equal(iterations);
         delaysArray.length.should.equal(iterations);
+        totalDelaysArray.length.should.equal(iterations);
+        let totalDelay = 0;
         for (let i = 0; i < iterations; i++) {
             iterationsArray[i].should.equal(i + 1);
             delaysArray[i].should.equal((!startDelay && i === 0) ? 0 : delay);
+            totalDelay += delaysArray[i];
+            totalDelaysArray[i].should.be.greaterThanOrEqual(totalDelay - 10);
         }
     };
 
     const checkIterationsAndDelaysArray = (iterations: number, delays: number[]) => {
         iterationsArray.length.should.equal(iterations);
         delaysArray.length.should.equal(iterations);
+        totalDelaysArray.length.should.equal(iterations);
+        let totalDelay = 0;
         for (let i = 0; i < iterations; i++) {
             iterationsArray[i].should.equal(i + 1);
             delaysArray[i].should.equal(delays[i]);
+            totalDelay += delaysArray[i];
+            totalDelaysArray[i].should.be.greaterThanOrEqual(totalDelay - 10);
         }
     };
 
     const checkJitterDelaysArray = (delays: number[]) => {
+        let totalDelay = 0;
         for (let i = 0; i < iterationsArray.length; i++) {
             delaysArray[i].should.be.lessThan(delays[i] + 1);
+            totalDelay += delaysArray[i];
+            totalDelaysArray[i].should.be.greaterThanOrEqual(totalDelay - 10);
         }
     };
 
-    const syncCheck = (iteration: number, delay: number): string => {
+    const syncCheck = (iteration: number, delay: number, totalDelay: number): string => {
         iterationsArray.push(iteration);
         delaysArray.push(delay);
+        totalDelaysArray.push(totalDelay);
         if (Date.now() > waitUntil) {
             return successMessage;
         }
         throw new Error('not the time yet');
     };
 
-    const asyncCheck = (iteration: number, delay: number): Promise<string> => {
+    const asyncCheck = (iteration: number, delay: number, totalDelay: number): Promise<string> => {
         iterationsArray.push(iteration);
         delaysArray.push(delay);
+        totalDelaysArray.push(totalDelay);
         return new Promise((resolve, reject) => {
             if (Date.now() > waitUntil) {
                 return resolve(successMessage);
