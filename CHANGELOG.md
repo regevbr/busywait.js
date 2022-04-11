@@ -4,10 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## Development
 -  nothing yet
 
+## [v3.1.2](https://github.com/regevbr/busywait.js/compare/v3.1.1...v3.1.2)
+### Fixed
+-  Support for node 17
+
 ## [v3.1.1](https://github.com/regevbr/busywait.js/compare/v3.1.0...v3.1.1)
 ### Fixed
 -  Support for node 16
-
 
 ## [v3.1.0](https://github.com/regevbr/busywait.js/compare/v3.0.0...v3.1.0)
 ### Added
