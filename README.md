@@ -3,11 +3,6 @@
 [![Build status](https://github.com/regevbr/busywait.js/actions/workflows/ci.yml/badge.svg?branch=master)](https://www.npmjs.com/package/busywait)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/5cc9e9fe4871a315f2aa/test_coverage)](https://codeclimate.com/github/regevbr/busywait.js/test_coverage)
 [![Maintainability](https://api.codeclimate.com/v1/badges/5cc9e9fe4871a315f2aa/maintainability)](https://codeclimate.com/github/regevbr/busywait.js/maintainability)
-[![Npm Version](https://img.shields.io/npm/v/busywait.svg?style=popout)](https://www.npmjs.com/package/busywait)
-[![node](https://img.shields.io/node/v-lts/busywait)](https://www.npmjs.com/package/busywait)
-[![Build status](https://github.com/regevbr/busywait.js/actions/workflows/ci.yml/badge.svg?branch=master)](https://www.npmjs.com/package/busywait)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/5cc9e9fe4871a315f2aa/test_coverage)](https://codeclimate.com/github/regevbr/busywait.js/test_coverage)
-[![Maintainability](https://api.codeclimate.com/v1/badges/5cc9e9fe4871a315f2aa/maintainability)](https://codeclimate.com/github/regevbr/busywait.js/maintainability)
 [![Known Vulnerabilities](https://snyk.io/test/github/regevbr/busywait.js/badge.svg?targetFile=package.json)](https://snyk.io/test/github/regevbr/busywait.js?targetFile=package.json)
 
 # busywait.js
