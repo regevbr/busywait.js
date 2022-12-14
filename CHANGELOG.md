@@ -4,6 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## Development
 -  nothing yet
 
+## [v4.0.0](https://github.com/regevbr/busywait.js/compare/v3.1.3...v4.0.0)
+### BREAKING CHANGES
+- Dropped support for node versions below 14
+### Fixed
+-  functions with `async` modifier were not recognized as functions
+
+
 ## [v3.1.3](https://github.com/regevbr/busywait.js/compare/v3.1.2...v3.1.3)
 ### Fixed
 -  Support for node 18
