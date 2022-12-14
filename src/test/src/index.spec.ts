@@ -10,7 +10,7 @@ interface IParam {
 
 type Done = (error?: any) => void;
 
-describe('busywait.js', function() {
+describe('busywait.js', function () {
 
     this.timeout(10000);
 
@@ -85,9 +85,21 @@ describe('busywait.js', function() {
         });
     };
 
+    const nativeAsyncCheck = async (iteration: number, delay: number, totalDelay: number): Promise<string> => {
+        iterationsArray.push(iteration);
+        delaysArray.push(delay);
+        totalDelaysArray.push(totalDelay);
+        if (Date.now() > waitUntil) {
+            return successMessage;
+        } else {
+            throw new Error();
+        }
+    };
+
     const params: IParam[] = [
         {checkFn: syncCheck},
         {checkFn: asyncCheck},
+        {checkFn: nativeAsyncCheck},
     ];
 
     itParam('should complete', params, (param: IParam) => {
