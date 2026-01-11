@@ -1,8 +1,8 @@
-import * as chai from 'chai'
-import * as path from 'path'
-import * as mod from 'module'
-import * as sinonChaiModule from 'sinon-chai'
-import * as chaiAsPromisedModule from 'chai-as-promised'
+import chai = require('chai')
+import path = require('path')
+import mod = require('module')
+import sinonChaiModule = require('sinon-chai')
+import chaiAsPromisedModule = require('chai-as-promised')
 
 type Mod = {
   _initPaths?: () => void
