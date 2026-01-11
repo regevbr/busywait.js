@@ -3,7 +3,7 @@ name: CI
 on:
   push:
     branches:
-      - master
+      - 'master'
   release:
     types: [ published ]
   pull_request:
@@ -11,7 +11,7 @@ on:
       - '**'
 
 env:
-  PRIMARY_NODE_VERSION: 18.x
+  PRIMARY_NODE_VERSION: 24.x
   PRIMARY_OS: ubuntu-latest
   REGISTRY: https://registry.npmjs.org/
 
@@ -22,7 +22,7 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest ]
-        node-version: [ 14.x, 16.x, 18.x ]
+        node-version: [ 18.x, 20.x, 22.x, 24.x ]
 
     steps:
 
@@ -35,22 +35,22 @@ jobs:
           echo action: ${{ github.action }}
           echo event: ${{ github.event_name }}
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         name: Checkout
         with:
           ref: ${{ github.event.client_payload.ref || github.ref }}
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
 
       - name: Get yarn cache directory
         id: yarn-cache-dir
         run: |
-          echo "::set-output name=dir::$(yarn cache dir)"
+          echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v4
         id: yarn-cache
         with:
           path: ${{ steps.yarn-cache-dir.outputs.dir }}
@@ -64,22 +64,26 @@ jobs:
           yarn build
 
       - name: Snyk security check
-        if: matrix.node-version == env.PRIMARY_NODE_VERSION && matrix.os == env.PRIMARY_OS
+        if: matrix.node-version == env.PRIMARY_NODE_VERSION && matrix.os == env.PRIMARY_OS && !github.event.pull_request.head.repo.fork
         uses: snyk/actions/node@master
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
       - name: Run unit tests with coverage
-        if: matrix.node-version == env.PRIMARY_NODE_VERSION && matrix.os == env.PRIMARY_OS
-        uses: paambaati/codeclimate-action@v2.7.5
-        env:
-          CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
-        with:
-          coverageCommand: yarn cover
+        if: matrix.node-version == env.PRIMARY_NODE_VERSION && matrix.os == env.PRIMARY_OS && !github.event.pull_request.head.repo.fork
+        run: yarn cover
+  
+      # TODO: setup secret and enable this
+      # - name: Upload coverage
+      #   if: matrix.node-version == env.PRIMARY_NODE_VERSION && matrix.os == env.PRIMARY_OS
+      #   uses: qltysh/qlty-action/coverage@v2
+      #   with:
+      #     token: ${{ secrets.QLTY_COVERAGE_TOKEN }}
+      #     files: coverage/lcov.info
 
       - name: Run unit tests
         if: "!(matrix.node-version == env.PRIMARY_NODE_VERSION && matrix.os == env.PRIMARY_OS)"
-        run: yarn mocha
+        run: yarn test
 
   publish_version:
     name: Publish
@@ -87,30 +91,31 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest ]
-        node-version: [ 18.x ]
+        node-version: [ 24.x ]
     needs: [ test ]
     if: github.event_name == 'release' && github.event.action == 'published'
     steps:
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v5
 
       - name: fetch
         run: |
           git fetch --prune --unshallow
 
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: ${{ env.REGISTRY }}
 
       - name: Get yarn cache directory
         id: yarn-cache-dir
+        shell: bash
         run: |
-          echo "::set-output name=dir::$(yarn cache dir)"
+          echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
 
-      - uses: actions/cache@v2
+      - uses: actions/cache@v4
         id: yarn-cache
         with:
           path: ${{ steps.yarn-cache-dir.outputs.dir }}
@@ -124,7 +129,7 @@ jobs:
           yarn build
 
       - name: Publish
-        uses: JS-DevTools/npm-publish@v1
+        uses: JS-DevTools/npm-publish@v3
         with:
           token: ${{ secrets.NPM_AUTH_TOKEN }}
           registry: ${{ env.REGISTRY }}

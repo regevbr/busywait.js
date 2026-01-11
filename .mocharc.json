@@ -1,0 +1,7 @@
+{
+  "extension": ["ts"],
+  "recursive": true,
+  "reporter": "spec",
+  "exit": true,
+  "spec": "src/test/**/*.ts"
+}

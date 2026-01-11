@@ -32,7 +32,6 @@ scripts
 **/*.spec.*
 
 # config files
-tslint.json
 .gitignore
 .editorconfig
 .jscs
