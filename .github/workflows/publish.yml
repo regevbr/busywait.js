@@ -47,9 +47,9 @@ jobs:
         id: yarn-cache
         with:
           path: ${{ steps.yarn-cache-dir.outputs.dir }}
-          key: ${{ ubuntu-latest }}-${{ env.NODE_VERSION }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          key: ubuntu-latest-${{ env.NODE_VERSION }}-yarn-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ ubuntu-latest }}-${{ env.NODE_VERSION }}-yarn-
+            ubuntu-latest-${{ env.NODE_VERSION }}-yarn-
 
       - name: Install dependencies and build
         run: |
