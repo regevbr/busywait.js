@@ -9,7 +9,7 @@ permissions:
   contents: read # Allows checking out the repository contents
 
 env:
-  PRIMARY_NODE_VERSION: 24.x
+  NODE_VERSION: 24.x
   REGISTRY: https://registry.npmjs.org/
 
 jobs:
